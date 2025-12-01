@@ -1,0 +1,71 @@
+﻿@{
+    ViewData["Title"] = "Patient Sign Up";
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background: #f5f8ff;">
+    <div class="card shadow-lg p-4" style="width: 500px; border-radius: 15px;">
+
+        <div class="text-center mb-4">
+           
+            <h3 class="mt-2">Create  Account</h3>
+          
+        </div>
+
+        <form method="post">
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Full Name</label>
+                <input type="text" class="form-control form-control-lg" placeholder="Enter your full name" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Email Address</label>
+                <input type="email" class="form-control form-control-lg" placeholder="Enter your email" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Phone Number</label>
+                <input type="tel" class="form-control form-control-lg" placeholder="Enter your phone" required />
+            </div>
+
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <label class="form-label fw-bold">Password</label>
+                    <input type="password" class="form-control form-control-lg" placeholder="Enter password" required />
+                </div>
+
+                <div class="col-6 mb-3">
+                    <label class="form-label fw-bold">Confirm Password</label>
+                    <input type="password" class="form-control form-control-lg" placeholder="Confirm password" required />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Date of Birth</label>
+                <input type="date" class="form-control form-control-lg" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Gender</label>
+                <select class="form-select form-select-lg" required>
+                    <option value="">Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+
+            <button class="btn btn-primary w-100 btn-lg" style="border-radius: 10px;">
+                Create Account
+            </button>
+
+        </form>
+
+        <hr />
+
+        <p class="text-center mb-0">
+            Already have an account?
+            <a href="/Account/Login" class="text-primary fw-bold">Login</a>
+        </p>
+
+    </div>
+</div>

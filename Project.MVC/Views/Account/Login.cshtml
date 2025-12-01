@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Patient Login";
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 90vh; background: #f5f8ff;">
+    <div class="card shadow-lg p-4" style="width: 400px; border-radius: 15px;">
+
+        <div class="text-center mb-4">
+            <h3 class="mt-2">Login</h3>
+           
+        </div>
+
+        <form method="post">
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Email address</label>
+                <input type="email" class="form-control form-control-lg" placeholder="Enter your email" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Password</label>
+                <input type="password" class="form-control form-control-lg" placeholder="Enter your password" required />
+            </div>
+
+            <div class="d-flex justify-content-between mb-3">
+                <div>
+                    <input type="checkbox" /> Remember me
+                </div>
+                <a href="#" class="text-primary">Forgot Password?</a>
+            </div>
+
+            <button class="btn btn-primary w-100 btn-lg" style="border-radius: 10px;">
+                Login
+            </button>
+
+        </form>
+
+        <hr />
+
+        <p class="text-center mb-0">
+            Don't have an account?
+            <a href="/Account/Register" class="text-primary fw-bold">Create Account</a>
+        </p>
+
+
+    </div>
+</div>
