@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Project.Models;
+using Project.DAL.Models;
 using System;
 
-namespace Project.Data
+namespace Project.DAL.Data
+
 {
     public class AppDbContext : DbContext
     {

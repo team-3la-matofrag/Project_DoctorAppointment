@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Project.Data;
+using Project.DAL.Data;
 
 #nullable disable
 
-namespace Project.Migrations
+namespace Project.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251219173514_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace Project.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Project.Models.Appointment", b =>
+            modelBuilder.Entity("Project.DAL.Models.Appointment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -59,7 +62,7 @@ namespace Project.Migrations
                     b.ToTable("Appointments");
                 });
 
-            modelBuilder.Entity("Project.Models.Doctor", b =>
+            modelBuilder.Entity("Project.DAL.Models.Doctor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -91,7 +94,7 @@ namespace Project.Migrations
                     b.ToTable("Doctors");
                 });
 
-            modelBuilder.Entity("Project.Models.DoctorAvailability", b =>
+            modelBuilder.Entity("Project.DAL.Models.DoctorAvailability", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -122,7 +125,7 @@ namespace Project.Migrations
                     b.ToTable("DoctorAvailabilities");
                 });
 
-            modelBuilder.Entity("Project.Models.Notification", b =>
+            modelBuilder.Entity("Project.DAL.Models.Notification", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -136,6 +139,12 @@ namespace Project.Migrations
                     b.Property<string>("Channel")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("ScheduledAt")
                         .HasColumnType("datetime2");
@@ -159,7 +168,7 @@ namespace Project.Migrations
                     b.ToTable("Notifications");
                 });
 
-            modelBuilder.Entity("Project.Models.Patient", b =>
+            modelBuilder.Entity("Project.DAL.Models.Patient", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -189,7 +198,7 @@ namespace Project.Migrations
                     b.ToTable("Patients");
                 });
 
-            modelBuilder.Entity("Project.Models.Specialization", b =>
+            modelBuilder.Entity("Project.DAL.Models.Specialization", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -206,7 +215,7 @@ namespace Project.Migrations
                     b.ToTable("Specializations");
                 });
 
-            modelBuilder.Entity("Project.Models.User", b =>
+            modelBuilder.Entity("Project.DAL.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -248,15 +257,15 @@ namespace Project.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Project.Models.Appointment", b =>
+            modelBuilder.Entity("Project.DAL.Models.Appointment", b =>
                 {
-                    b.HasOne("Project.Models.Doctor", "Doctor")
+                    b.HasOne("Project.DAL.Models.Doctor", "Doctor")
                         .WithMany("Appointments")
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Project.Models.Patient", "Patient")
+                    b.HasOne("Project.DAL.Models.Patient", "Patient")
                         .WithMany("Appointments")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -267,16 +276,16 @@ namespace Project.Migrations
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("Project.Models.Doctor", b =>
+            modelBuilder.Entity("Project.DAL.Models.Doctor", b =>
                 {
-                    b.HasOne("Project.Models.Specialization", "Specialization")
+                    b.HasOne("Project.DAL.Models.Specialization", "Specialization")
                         .WithMany("Doctors")
                         .HasForeignKey("SpecializationId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Project.Models.User", "User")
+                    b.HasOne("Project.DAL.Models.User", "User")
                         .WithOne("Doctor")
-                        .HasForeignKey("Project.Models.Doctor", "UserId")
+                        .HasForeignKey("Project.DAL.Models.Doctor", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -285,9 +294,9 @@ namespace Project.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Project.Models.DoctorAvailability", b =>
+            modelBuilder.Entity("Project.DAL.Models.DoctorAvailability", b =>
                 {
-                    b.HasOne("Project.Models.Doctor", "Doctor")
+                    b.HasOne("Project.DAL.Models.Doctor", "Doctor")
                         .WithMany("Availabilities")
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -296,15 +305,15 @@ namespace Project.Migrations
                     b.Navigation("Doctor");
                 });
 
-            modelBuilder.Entity("Project.Models.Notification", b =>
+            modelBuilder.Entity("Project.DAL.Models.Notification", b =>
                 {
-                    b.HasOne("Project.Models.Appointment", "Appointment")
+                    b.HasOne("Project.DAL.Models.Appointment", "Appointment")
                         .WithMany("Notifications")
                         .HasForeignKey("AppointmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Project.Models.User", "User")
+                    b.HasOne("Project.DAL.Models.User", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -315,40 +324,40 @@ namespace Project.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Project.Models.Patient", b =>
+            modelBuilder.Entity("Project.DAL.Models.Patient", b =>
                 {
-                    b.HasOne("Project.Models.User", "User")
+                    b.HasOne("Project.DAL.Models.User", "User")
                         .WithOne("Patient")
-                        .HasForeignKey("Project.Models.Patient", "UserId")
+                        .HasForeignKey("Project.DAL.Models.Patient", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Project.Models.Appointment", b =>
+            modelBuilder.Entity("Project.DAL.Models.Appointment", b =>
                 {
                     b.Navigation("Notifications");
                 });
 
-            modelBuilder.Entity("Project.Models.Doctor", b =>
+            modelBuilder.Entity("Project.DAL.Models.Doctor", b =>
                 {
                     b.Navigation("Appointments");
 
                     b.Navigation("Availabilities");
                 });
 
-            modelBuilder.Entity("Project.Models.Patient", b =>
+            modelBuilder.Entity("Project.DAL.Models.Patient", b =>
                 {
                     b.Navigation("Appointments");
                 });
 
-            modelBuilder.Entity("Project.Models.Specialization", b =>
+            modelBuilder.Entity("Project.DAL.Models.Specialization", b =>
                 {
                     b.Navigation("Doctors");
                 });
 
-            modelBuilder.Entity("Project.Models.User", b =>
+            modelBuilder.Entity("Project.DAL.Models.User", b =>
                 {
                     b.Navigation("Doctor")
                         .IsRequired();

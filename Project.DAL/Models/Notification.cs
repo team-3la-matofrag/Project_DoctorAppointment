@@ -1,4 +1,4 @@
-﻿namespace Project.Models
+﻿namespace Project.DAL.Models
 {
     public class Notification
     {
@@ -14,7 +14,10 @@
         public DateTime ScheduledAt { get; set; }
         public DateTime? SentAt { get; set; }
         public string Status { get; set; }       // Pending / Sent / Failed
-        public object CreatedAt { get; internal set; }
-        public bool IsRead { get; internal set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public bool IsRead { get;  set; }
+
+        
     }
 }

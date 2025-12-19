@@ -1,4 +1,5 @@
-﻿namespace Project.Models
+﻿namespace Project.DAL.Models
+
 {
     public class Appointment
     {

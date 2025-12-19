@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Project.Data;
-using Project.Models;
+using Project.DAL.Data;
+using Project.DAL.Models;
 
 namespace Project.Controllers;
 

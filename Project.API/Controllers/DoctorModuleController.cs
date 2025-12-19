@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Project.Data;
+using Project.DAL.Data;
 
 namespace Project.Controllers;
 
@@ -104,7 +104,7 @@ public class DoctorModuleController : ControllerBase
 
         if (existing == null)
         {
-            existing = new Models.DoctorAvailability
+            existing = new DAL.Models.DoctorAvailability
             {
                 DoctorId = doctorId,
                 DayOfWeek = request.DayOfWeek,

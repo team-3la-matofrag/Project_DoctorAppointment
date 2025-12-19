@@ -1,13 +1,38 @@
 using Microsoft.EntityFrameworkCore;
-using Project.Data;
+using Project.BLL.Interfaces;
+using Project.BLL.Services;
+using Project.DAL.Data;
+using Project.DAL.Interfaces;
+using Project.DAL.Repositories;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("Connection"),
+        b => b.MigrationsAssembly("Project.DAL")
+    ));
 
-builder.Services.AddDbContext<AppDbContext>(op =>
-    op.UseSqlServer(builder.Configuration.GetConnectionString("Connection")));
-builder.Services.AddControllers();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("Connection")
+    ));
+
+builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<PatientRepository>();
+builder.Services.AddScoped<DoctorRepository>();
+builder.Services.AddScoped<SpecializationRepository>();
+builder.Services.AddScoped<DoctorAvailabilityRepository>();
+builder.Services.AddScoped<AppointmentRepository>();
+builder.Services.AddScoped<NotificationRepository>();
+
+
+// DAL
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+
+// BLL
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
 
 // Add services to the container.
@@ -18,6 +43,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+
+
 
 
 

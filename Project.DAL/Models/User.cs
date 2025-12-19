@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Project.Models
+namespace Project.DAL.Models
 {
     public class User
     {
