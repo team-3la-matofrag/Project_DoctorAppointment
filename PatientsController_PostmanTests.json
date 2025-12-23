@@ -1,0 +1,176 @@
+{
+  "info": {
+    "name": "Patients API Tests",
+    "description": "Test collection for Patients Controller endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "tests": {
+    "createPatient": {
+      "method": "POST",
+      "url": "https://localhost:7xxx/api/patients",
+      "description": "Create a new patient",
+      "body": {
+        "userId": 1,
+        "fullName": "Ahmad Salem",
+        "email": "ahmad.salem@example.com",
+        "dob": "1990-05-15T00:00:00",
+        "gender": "Male",
+        "notes": "No known allergies"
+      }
+    },
+    "createPatient2": {
+      "method": "POST",
+      "url": "https://localhost:7xxx/api/patients",
+      "description": "Create another patient",
+      "body": {
+        "userId": 2,
+        "fullName": "Fatima Mansour",
+        "email": "fatima.mansour@example.com",
+        "dob": "1985-08-22T00:00:00",
+        "gender": "Female",
+        "notes": "Diabetic patient, requires regular checkups"
+      }
+    },
+    "getAllPatients": {
+      "method": "GET",
+      "url": "https://localhost:7xxx/api/patients",
+      "description": "Get all patients"
+    },
+    "getPatientById": {
+      "method": "GET",
+      "url": "https://localhost:7xxx/api/patients/1",
+      "description": "Get patient by ID (replace 1 with actual ID)"
+    },
+    "getPatientProfile": {
+      "method": "GET",
+      "url": "https://localhost:7xxx/api/patients/profile/1",
+      "description": "Get patient profile by User ID (replace 1 with actual userId)"
+    },
+    "getPatientAppointments": {
+      "method": "GET",
+      "url": "https://localhost:7xxx/api/patients/1/appointments",
+      "description": "Get all appointments for patient (replace 1 with actual patient ID)"
+    },
+    "updatePatient": {
+      "method": "PUT",
+      "url": "https://localhost:7xxx/api/patients/1",
+      "description": "Update patient (replace 1 with actual ID)",
+      "body": {
+        "id": 1,
+        "userId": 1,
+        "fullName": "Ahmad Salem Updated",
+        "email": "ahmad.salem@example.com",
+        "dob": "1990-05-15T00:00:00",
+        "gender": "Male",
+        "notes": "Updated: No known allergies, added blood type O+"
+      }
+    },
+    "deletePatient": {
+      "method": "DELETE",
+      "url": "https://localhost:7xxx/api/patients/1",
+      "description": "Delete patient (replace 1 with actual ID) - USE WITH CAUTION"
+    }
+  },
+  "quickTestBodies": {
+    "note": "Copy these JSON bodies directly into Postman",
+    "POST_CreatePatient_MinimalData": {
+      "userId": 3,
+      "fullName": "Sara Ali",
+      "email": "sara.ali@example.com",
+      "dob": "1995-03-10T00:00:00",
+      "gender": "Female",
+      "notes": ""
+    },
+    "POST_CreatePatient_FullData": {
+      "userId": 4,
+      "fullName": "Mohammed Hassan",
+      "email": "mohammed.hassan@example.com",
+      "dob": "1988-12-05T00:00:00",
+      "gender": "Male",
+      "notes": "Heart condition, avoid strenuous activities"
+    },
+    "PUT_UpdatePatient": {
+      "id": 1,
+      "userId": 1,
+      "fullName": "Ahmad Salem",
+      "email": "ahmad.salem@example.com",
+      "dob": "1990-05-15T00:00:00",
+      "gender": "Male",
+      "notes": "Updated notes: Regular patient, prefers morning appointments"
+    }
+  },
+  "testScenarios": [
+    {
+      "scenario": "1. Create First Patient",
+      "steps": [
+        {
+          "step": 1,
+          "action": "POST to https://localhost:7xxx/api/patients",
+          "body": {
+            "userId": 1,
+            "fullName": "Test Patient One",
+            "email": "patient1@test.com",
+            "dob": "1992-01-15T00:00:00",
+            "gender": "Male",
+            "notes": "Test patient for API testing"
+          },
+          "expectedResponse": 201,
+          "expectedResult": "Returns created patient with ID"
+        }
+      ]
+    },
+    {
+      "scenario": "2. Retrieve Patient",
+      "steps": [
+        {
+          "step": 1,
+          "action": "GET https://localhost:7xxx/api/patients/1",
+          "expectedResponse": 200,
+          "expectedResult": "Returns patient details"
+        }
+      ]
+    },
+    {
+      "scenario": "3. Update Patient",
+      "steps": [
+        {
+          "step": 1,
+          "action": "PUT to https://localhost:7xxx/api/patients/1",
+          "body": {
+            "id": 1,
+            "userId": 1,
+            "fullName": "Test Patient Updated",
+            "email": "patient1@test.com",
+            "dob": "1992-01-15T00:00:00",
+            "gender": "Male",
+            "notes": "Updated notes field"
+          },
+          "expectedResponse": 204,
+          "expectedResult": "No content returned"
+        }
+      ]
+    },
+    {
+      "scenario": "4. Get Profile by UserId",
+      "steps": [
+        {
+          "step": 1,
+          "action": "GET https://localhost:7xxx/api/patients/profile/1",
+          "expectedResponse": 200,
+          "expectedResult": "Returns patient profile for userId 1"
+        }
+      ]
+    },
+    {
+      "scenario": "5. Get Patient Appointments",
+      "steps": [
+        {
+          "step": 1,
+          "action": "GET https://localhost:7xxx/api/patients/1/appointments",
+          "expectedResponse": 200,
+          "expectedResult": "Returns array of appointments (may be empty)"
+        }
+      ]
+    }
+  ]
+}
