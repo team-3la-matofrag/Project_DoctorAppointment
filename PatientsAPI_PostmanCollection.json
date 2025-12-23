@@ -1,0 +1,271 @@
+{
+  "info": {
+    "name": "Patients API - Complete Test Collection",
+    "_postman_id": "12345678-1234-1234-1234-123456789abc",
+    "description": "Complete test collection for Patient module CRUD + Profile + Appointments",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Create Patient",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 1,\n  \"fullName\": \"Ahmad Salem\",\n  \"email\": \"ahmad.salem@example.com\",\n  \"dob\": \"1990-05-15T00:00:00\",\n  \"gender\": \"Male\",\n  \"notes\": \"No known allergies\"\n}"
+        },
+        "url": {
+          "raw": "https://localhost:7001/api/patients",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7001",
+          "path": [
+            "api",
+            "patients"
+          ]
+        },
+        "description": "Create a new patient record"
+      },
+      "response": []
+    },
+    {
+      "name": "2. Create Patient - Female",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 2,\n  \"fullName\": \"Fatima Mansour\",\n  \"email\": \"fatima.mansour@example.com\",\n  \"dob\": \"1985-08-22T00:00:00\",\n  \"gender\": \"Female\",\n  \"notes\": \"Diabetic patient\"\n}"
+        },
+        "url": {
+          "raw": "https://localhost:7001/api/patients",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7001",
+          "path": [
+            "api",
+            "patients"
+          ]
+        },
+        "description": "Create another patient for testing"
+      },
+      "response": []
+    },
+    {
+      "name": "3. Get All Patients",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://localhost:7001/api/patients",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7001",
+          "path": [
+            "api",
+            "patients"
+          ]
+        },
+        "description": "Retrieve all patients from the system"
+      },
+      "response": []
+    },
+    {
+      "name": "4. Get Patient By ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://localhost:7001/api/patients/1",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7001",
+          "path": [
+            "api",
+            "patients",
+            "1"
+          ]
+        },
+        "description": "Get specific patient by patient ID (change the ID as needed)"
+      },
+      "response": []
+    },
+    {
+      "name": "5. Get Patient Profile by UserID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://localhost:7001/api/patients/profile/1",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7001",
+          "path": [
+            "api",
+            "patients",
+            "profile",
+            "1"
+          ]
+        },
+        "description": "Get patient profile using User ID"
+      },
+      "response": []
+    },
+    {
+      "name": "6. Get Patient Appointments",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://localhost:7001/api/patients/1/appointments",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7001",
+          "path": [
+            "api",
+            "patients",
+            "1",
+            "appointments"
+          ]
+        },
+        "description": "Get all appointments for a specific patient"
+      },
+      "response": []
+    },
+    {
+      "name": "7. Update Patient",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": 1,\n  \"userId\": 1,\n  \"fullName\": \"Ahmad Salem\",\n  \"email\": \"ahmad.salem@example.com\",\n  \"dob\": \"1990-05-15T00:00:00\",\n  \"gender\": \"Male\",\n  \"notes\": \"Updated: No allergies, Blood type O+\"\n}"
+        },
+        "url": {
+          "raw": "https://localhost:7001/api/patients/1",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7001",
+          "path": [
+            "api",
+            "patients",
+            "1"
+          ]
+        },
+        "description": "Update patient information"
+      },
+      "response": []
+    },
+    {
+      "name": "8. Delete Patient",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "https://localhost:7001/api/patients/1",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7001",
+          "path": [
+            "api",
+            "patients",
+            "1"
+          ]
+        },
+        "description": "Delete a patient record (USE WITH CAUTION)"
+      },
+      "response": []
+    },
+    {
+      "name": "9. Get Patient By ID - Not Found Test",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://localhost:7001/api/patients/9999",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7001",
+          "path": [
+            "api",
+            "patients",
+            "9999"
+          ]
+        },
+        "description": "Test 404 response for non-existent patient"
+      },
+      "response": []
+    },
+    {
+      "name": "10. Create Patient - Missing Fields",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 3,\n  \"gender\": \"Male\"\n}"
+        },
+        "url": {
+          "raw": "https://localhost:7001/api/patients",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7001",
+          "path": [
+            "api",
+            "patients"
+          ]
+        },
+        "description": "Test validation - missing required fields"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://localhost:7001",
+      "type": "string"
+    }
+  ]
+}

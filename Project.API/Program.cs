@@ -4,6 +4,7 @@ using Project.BLL.Services;
 using Project.DAL.Data;
 using Project.DAL.Interfaces;
 using Project.DAL.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("Connection")
     ));
+var cs = builder.Configuration.GetConnectionString("connection");
+Console.WriteLine(cs);
 
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<PatientRepository>();
@@ -37,9 +40,11 @@ builder.Services.AddScoped<IDoctorService, DoctorService>();
 
 // DAL
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 
 // BLL
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IPatientService, PatientService>();
 
 
 // Add services to the container.
@@ -48,13 +53,22 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+    });
 
 var app = builder.Build();
-
-
-
-
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
