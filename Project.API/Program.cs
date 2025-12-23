@@ -22,10 +22,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<PatientRepository>();
 builder.Services.AddScoped<DoctorRepository>();
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+
 builder.Services.AddScoped<SpecializationRepository>();
-builder.Services.AddScoped<DoctorAvailabilityRepository>();
+
+
 builder.Services.AddScoped<AppointmentRepository>();
 builder.Services.AddScoped<NotificationRepository>();
+builder.Services.AddScoped<IDoctorService, DoctorService>();
+
+
+
 
 
 // DAL

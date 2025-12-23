@@ -66,105 +66,93 @@ public class DoctorModuleController : ControllerBase
         }));
     }
 
-    // GET /doctor/availability
-    [HttpGet("/doctor/availability")]
-    public async Task<IActionResult> GetAvailability([FromQuery] int doctorId)
-    {
-        var availability = await _context.DoctorAvailabilities
-            .Where(a => a.DoctorId == doctorId)
-            .OrderBy(a => a.DayOfWeek)
-            .ThenBy(a => a.StartTime)
-            .ToListAsync();
-
-        return Ok(availability);
-    }
-
+    
     public record AvailabilityRequest(
         string DayOfWeek,
         TimeSpan StartTime,
         TimeSpan EndTime,
         int SlotMinutes);
 
-    // POST /doctor/availability
-    [HttpPost("/doctor/availability")]
-    public async Task<IActionResult> AddOrUpdateAvailability(
-        [FromQuery] int doctorId,
-        [FromBody] AvailabilityRequest request)
-    {
-        if (request.EndTime <= request.StartTime)
-        {
-            return BadRequest(new { message = "End time must be after start time" });
-        }
+    //// POST /doctor/availability
+    //[HttpPost("/doctor/availability")]
+    //public async Task<IActionResult> AddOrUpdateAvailability(
+    //    [FromQuery] int doctorId,
+    //    [FromBody] AvailabilityRequest request)
+    //{
+    //    if (request.EndTime <= request.StartTime)
+    //    {
+    //        return BadRequest(new { message = "End time must be after start time" });
+    //    }
 
-        var existing = await _context.DoctorAvailabilities.FirstOrDefaultAsync(a =>
-            a.DoctorId == doctorId &&
-            a.DayOfWeek == request.DayOfWeek &&
-            a.StartTime == request.StartTime &&
-            a.EndTime == request.EndTime);
+    //    var existing = await _context.DoctorAvailabilities.FirstOrDefaultAsync(a =>
+    //        a.DoctorId == doctorId &&
+    //        a.DayOfWeek == request.DayOfWeek &&
+    //        a.StartTime == request.StartTime &&
+    //        a.EndTime == request.EndTime);
 
-        if (existing == null)
-        {
-            existing = new DAL.Models.DoctorAvailability
-            {
-                DoctorId = doctorId,
-                DayOfWeek = request.DayOfWeek,
-                StartTime = request.StartTime,
-                EndTime = request.EndTime,
-                SlotMinutes = request.SlotMinutes
-            };
-            _context.DoctorAvailabilities.Add(existing);
-        }
-        else
-        {
-            existing.SlotMinutes = request.SlotMinutes;
-        }
+    //    if (existing == null)
+    //    {
+    //        existing = new DAL.Models.DoctorAvailability
+    //        {
+    //            DoctorId = doctorId,
+    //            DayOfWeek = request.DayOfWeek,
+    //            StartTime = request.StartTime,
+    //            EndTime = request.EndTime,
+    //            SlotMinutes = request.SlotMinutes
+    //        };
+    //        _context.DoctorAvailabilities.Add(existing);
+    //    }
+    //    else
+    //    {
+    //        existing.SlotMinutes = request.SlotMinutes;
+    //    }
 
-        await _context.SaveChangesAsync();
+    //    await _context.SaveChangesAsync();
 
-        return Ok(existing);
-    }
+    //    return Ok(existing);
+    //}
 
     // POST /doctor/availability/delete/{id}
-    [HttpPost("/doctor/availability/delete/{id:int}")]
-    public async Task<IActionResult> DeleteAvailability(int id)
-    {
-        var availability = await _context.DoctorAvailabilities.FindAsync(id);
-        if (availability == null)
-        {
-            return NotFound();
-        }
+    //[HttpPost("/doctor/availability/delete/{id:int}")]
+    //public async Task<IActionResult> DeleteAvailability(int id)
+    //{
+    //    var availability = await _context.DoctorAvailabilities.FindAsync(id);
+    //    if (availability == null)
+    //    {
+    //        return NotFound();
+    //    }
 
-        _context.DoctorAvailabilities.Remove(availability);
-        await _context.SaveChangesAsync();
+    //    _context.DoctorAvailabilities.Remove(availability);
+    //    await _context.SaveChangesAsync();
 
-        return NoContent();
-    }
+    //    return NoContent();
+    //}
 
-    // GET /doctor/profile
-    [HttpGet("/doctor/profile")]
-    public async Task<IActionResult> GetProfile([FromQuery] int doctorId)
-    {
-        var doctor = await _context.Doctors
-            .Include(d => d.User)
-            .Include(d => d.Specialization)
-            .FirstOrDefaultAsync(d => d.Id == doctorId);
+    //// GET /doctor/profile
+    //[HttpGet("/doctor/profile")]
+    //public async Task<IActionResult> GetProfile([FromQuery] int doctorId)
+    //{
+    //    var doctor = await _context.Doctors
+    //        .Include(d => d.User)
+    //        .Include(d => d.Specialization)
+    //        .FirstOrDefaultAsync(d => d.Id == doctorId);
 
-        if (doctor == null)
-        {
-            return NotFound();
-        }
+    //    if (doctor == null)
+    //    {
+    //        return NotFound();
+    //    }
 
-        return Ok(new
-        {
-            doctor.Id,
-            doctor.User.FullName,
-            doctor.User.Email,
-            doctor.User.Phone,
-            doctor.ClinicAddress,
-            doctor.Bio,
-            Specialization = doctor.Specialization != null ? doctor.Specialization.Name : null
-        });
-    }
+    //    return Ok(new
+    //    {
+    //        doctor.Id,
+    //        doctor.User.FullName,
+    //        doctor.User.Email,
+    //        doctor.User.Phone,
+    //        doctor.ClinicAddress,
+    //        doctor.Bio,
+    //        Specialization = doctor.Specialization != null ? doctor.Specialization.Name : null
+    //    });
+    //}
 
     public record EditDoctorProfileRequest(
         string? FullName,

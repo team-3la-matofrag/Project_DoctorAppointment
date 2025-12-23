@@ -1,34 +1,41 @@
-﻿using Project.DAL.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Project.DAL.Data;
+using Project.DAL.Interfaces;
 using Project.DAL.Models;
-using Microsoft.EntityFrameworkCore;
 
-namespace Project.DAL.Repositories
+public class DoctorRepository : IDoctorRepository
 {
-    public class DoctorRepository
+    private readonly AppDbContext _context;
+
+    public DoctorRepository(AppDbContext context)
     {
-        private readonly AppDbContext _context;
+        _context = context;
+    }
 
-        public DoctorRepository(AppDbContext context)
-        {
-            _context = context;
-        }
+    public async Task<List<Doctor>> GetAllAsync()
+    {
+        return await _context.Doctors
+            .Include(d => d.User)
+            .Include(d => d.Specialization)
+            .ToListAsync();
+    }
 
-        public List<Doctor> GetAll()
-        {
-            return _context.Doctors
-                .Include(d => d.Specialization)
-                .ToList();
-        }
+    public async Task<Doctor?> GetByIdAsync(int id)
+    {
+        return await _context.Doctors
+            .Include(d => d.User)
+            .Include(d => d.Specialization)
+            .FirstOrDefaultAsync(d => d.Id == id);
+    }
 
-        public Doctor GetById(int id)
-        {
-            return _context.Doctors.Find(id);
-        }
+    public async Task AddAsync(Doctor doctor)
+    {
+        _context.Doctors.Add(doctor);
+        await _context.SaveChangesAsync();
+    }
 
-        public void Add(Doctor doctor)
-        {
-            _context.Doctors.Add(doctor);
-            _context.SaveChanges();
-        }
+    public Task SaveChangesAsync()
+    {
+        return _context.SaveChangesAsync();
     }
 }
