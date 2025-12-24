@@ -37,7 +37,6 @@ builder.Services.AddScoped<IDoctorService, DoctorService>();
 
 
 
-
 // DAL
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
