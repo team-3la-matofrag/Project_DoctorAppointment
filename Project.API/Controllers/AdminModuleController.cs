@@ -4,6 +4,7 @@ using Project.DAL.Data;
 using Project.DAL.Models;
 
 namespace Project.Controllers;
+
 [ApiController]
 public class AdminModuleController : ControllerBase
 {

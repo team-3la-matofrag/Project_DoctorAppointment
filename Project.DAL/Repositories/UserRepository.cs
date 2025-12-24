@@ -1,9 +1,11 @@
-﻿using Project.DAL.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Project.DAL.Data;
+using Project.DAL.Interfaces;
 using Project.DAL.Models;
 
 namespace Project.DAL.Repositories
 {
-    public class UserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly AppDbContext _context;
 
@@ -12,20 +14,24 @@ namespace Project.DAL.Repositories
             _context = context;
         }
 
-        public void Add(User user)
+        public async Task AddAsync(User user)
         {
-            _context.Users.Add(user);
-            _context.SaveChanges();
+            await _context.Users.AddAsync(user);
         }
 
-        public User GetByEmail(string email)
+        public async Task<User?> GetByEmailAsync(string email)
         {
-            return _context.Users.FirstOrDefault(u => u.Email == email);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
-        public User GetById(int id)
+        public async Task<User?> GetByIdAsync(int id)
         {
-            return _context.Users.Find(id);
+            return await _context.Users.FindAsync(id);
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }

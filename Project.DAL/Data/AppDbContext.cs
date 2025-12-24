@@ -15,7 +15,7 @@ namespace Project.DAL.Data
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Specialization> Specializations { get; set; }
-     
+        public DbSet<DoctorAvailability> DoctorAvailabilities { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Notification> Notifications { get; set; }
 
@@ -48,7 +48,12 @@ namespace Project.DAL.Data
                 .HasForeignKey(d => d.SpecializationId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            
+            // DOCTOR AVAILABILITY (1 - Many)
+            modelBuilder.Entity<DoctorAvailability>()
+                .HasOne(a => a.Doctor)
+                .WithMany(d => d.Availabilities)
+                .HasForeignKey(a => a.DoctorId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // PATIENT
             modelBuilder.Entity<Patient>()

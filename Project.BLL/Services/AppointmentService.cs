@@ -8,12 +8,10 @@ namespace Project.BLL.Services
     public class AppointmentService : IAppointmentService
     {
         private readonly IAppointmentRepository _repo;
-        private readonly IDoctorRepository _doctorRepo;
 
-        public AppointmentService(IAppointmentRepository repo, IDoctorRepository doctorRepo)
+        public AppointmentService(IAppointmentRepository repo)
         {
             _repo = repo;
-            _doctorRepo = doctorRepo;
         }
 
         public async Task<bool> CheckAvailabilityAsync(int doctorId, DateTime startAt, DateTime endAt)
@@ -24,19 +22,15 @@ namespace Project.BLL.Services
         public async Task<Appointment> AddAppointmentAsync(AppointmentDto dto)
         {
             if (dto.EndAt <= dto.StartAt)
-                throw new Exception("Invalid time range");
+                throw new Exception("End time must be after start time");
 
-            var doctor = await _doctorRepo.GetByIdAsync(dto.DoctorId)
-                ?? throw new Exception("Doctor not found");
+            var available = await _repo.IsAvailableAsync(
+                dto.DoctorId,
+                dto.StartAt,
+                dto.EndAt);
 
-           
-
-            var start = dto.StartAt.TimeOfDay;
-            var end = dto.EndAt.TimeOfDay;
-
-            if (start < doctor.WorkStart || end > doctor.WorkEnd)
-                throw new Exception("Outside working hours");
-
+            if (!available)
+                throw new Exception("Time slot is not available");
 
             var appointment = new Appointment
             {
@@ -107,6 +101,5 @@ namespace Project.BLL.Services
         {
             return _repo.GetTodayAppointmentsAsync(doctorId);
         }
-
     }
 }

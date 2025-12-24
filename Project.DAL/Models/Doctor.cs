@@ -9,13 +9,11 @@
 
         public int? SpecializationId { get; set; }
         public Specialization Specialization { get; set; }
-       
-        public string? Bio { get; set; }
-        public string? ClinicAddress { get; set; }
 
-        public TimeSpan WorkStart { get; set; } 
-        public TimeSpan WorkEnd { get; set; }     
+        public string Bio { get; set; }
+        public string ClinicAddress { get; set; }
+
+        public ICollection<DoctorAvailability> Availabilities { get; set; }
         public ICollection<Appointment> Appointments { get; set; }
-        public bool IsActive { get; set; } // Add this property to fix CS1061
     }
 }

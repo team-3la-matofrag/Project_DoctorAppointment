@@ -68,9 +68,11 @@ namespace Project.DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Bio")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClinicAddress")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("SpecializationId")
@@ -78,12 +80,6 @@ namespace Project.DAL.Migrations
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
-
-                    b.Property<TimeSpan>("WorkEnd")
-                        .HasColumnType("time");
-
-                    b.Property<TimeSpan>("WorkStart")
-                        .HasColumnType("time");
 
                     b.HasKey("Id");
 
@@ -93,6 +89,37 @@ namespace Project.DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("Doctors");
+                });
+
+            modelBuilder.Entity("Project.DAL.Models.DoctorAvailability", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DayOfWeek")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("SlotMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
+
+                    b.ToTable("DoctorAvailabilities");
                 });
 
             modelBuilder.Entity("Project.DAL.Models.Notification", b =>
@@ -264,6 +291,17 @@ namespace Project.DAL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Project.DAL.Models.DoctorAvailability", b =>
+                {
+                    b.HasOne("Project.DAL.Models.Doctor", "Doctor")
+                        .WithMany("Availabilities")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+                });
+
             modelBuilder.Entity("Project.DAL.Models.Notification", b =>
                 {
                     b.HasOne("Project.DAL.Models.Appointment", "Appointment")
@@ -302,6 +340,8 @@ namespace Project.DAL.Migrations
             modelBuilder.Entity("Project.DAL.Models.Doctor", b =>
                 {
                     b.Navigation("Appointments");
+
+                    b.Navigation("Availabilities");
                 });
 
             modelBuilder.Entity("Project.DAL.Models.Patient", b =>
