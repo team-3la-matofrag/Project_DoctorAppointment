@@ -16,5 +16,6 @@
         public TimeSpan WorkStart { get; set; } 
         public TimeSpan WorkEnd { get; set; }     
         public ICollection<Appointment> Appointments { get; set; }
+        public bool IsActive { get; set; } // Add this property to fix CS1061
     }
 }
