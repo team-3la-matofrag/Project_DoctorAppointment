@@ -34,6 +34,8 @@ builder.Services.AddScoped<AppointmentRepository>();
 builder.Services.AddScoped<NotificationRepository>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 
 

@@ -2,6 +2,8 @@
 {
     public class Doctor
     {
+        internal bool IsActive;
+
         public int Id { get; set; }
 
         public int UserId { get; set; }
