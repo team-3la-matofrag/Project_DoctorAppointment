@@ -42,6 +42,11 @@ builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
+
 // BLL
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IPatientService, PatientService>();

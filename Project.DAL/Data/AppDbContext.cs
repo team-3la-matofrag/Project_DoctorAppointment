@@ -71,11 +71,29 @@ namespace Project.DAL.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             // NOTIFICATION
-            modelBuilder.Entity<Notification>()
-                .HasOne(n => n.User)
-                .WithMany(u => u.Notifications)
-                .HasForeignKey(n => n.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Notification>(entity =>
+            {
+                entity.HasKey(n => n.Id);
+                entity.Property(n => n.Message)
+                .HasMaxLength(1000)
+                .IsRequired();
+                entity.Property(n => n.Channel)
+                .HasMaxLength(50)
+                .IsRequired();
+                entity.Property(n => n.Status)
+                .HasMaxLength(50)
+                .IsRequired();
+                // Relationships
+                entity.HasOne(n => n.User)
+                    .WithMany(u => u.Notifications)
+                    .HasForeignKey(n => n.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(n => n.Appointment)
+                    .WithMany(a => a.Notifications)
+                    .HasForeignKey(n => n.AppointmentId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }
