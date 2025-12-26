@@ -35,6 +35,10 @@ builder.Services.AddScoped<NotificationRepository>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 
 
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+// DAL Interfaces
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
 
