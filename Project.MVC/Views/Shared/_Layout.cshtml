@@ -1,55 +1,69 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Doctor Appointment System</title>
 
-    <!-- Favicons -->
-    
     <link rel="icon" type="image/png" href="~/assets/img/favicon2.png" />
 
-
-    <!-- Vendor CSS Files -->
+    <!-- Bootstrap & Icons -->
     <link href="~/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="~/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-    <link href="~/assets/vendor/aos/aos.css" rel="stylesheet">
-    <link href="~/assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
-    <link href="~/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-    <link href="~/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
-    <!-- Main CSS File -->
+    <!-- Template CSS -->
     <link href="~/assets/css/main.css" rel="stylesheet">
+
+    <style>
+        .branding {
+            min-height: 70px;
+        }
+
+        .navmenu ul {
+            display: flex;
+            gap: 12px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        .navmenu a {
+            padding: 8px 12px;
+            font-weight: 500;
+            color: #333;
+            text-decoration: none;
+        }
+
+            .navmenu a:hover {
+                color: #0d6efd;
+            }
+    </style>
 </head>
 
-<body class="index-page">
+<body class="d-flex flex-column min-vh-100">
 
-    <!-- Header -->
-    <header id="header" class="header sticky-top">
+    <header id="header" class="header sticky-top bg-white shadow-sm">
 
-        <div class="topbar d-flex align-items-center">
-            <div class="container d-flex justify-content-center justify-content-md-between">
-                <div class="contact-info d-flex align-items-center">
-                    <i class="bi bi-envelope d-flex align-items-center"><a href="mailto:contact@example.com">contact@example.com</a></i>
-                    <i class="bi bi-phone d-flex align-items-center ms-4"><span>+1 5589 55488 55</span></i>
-                </div>
-                <div class="social-links d-none d-md-flex align-items-center">
-                    <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
-                    <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-                    <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-                    <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
-                </div>
+        <!-- Topbar -->
+        <div class="bg-light py-2 small">
+            <div class="container-xl d-flex justify-content-between">
+                <span>contact@example.com</span>
+                <span>+1 5589 55488 55</span>
             </div>
         </div>
 
-        <div class="branding d-flex align-items-center">
+        <!-- Main Navbar -->
+        <div class="branding">
+            <div class="container-xl d-flex align-items-center justify-content-between">
 
-            <div class="container position-relative d-flex align-items-center justify-content-between">
-                <a href="/" class="logo d-flex align-items-center me-auto">
-                    <h1 class="sitename">Clinic</h1>
+                <!-- Logo -->
+                <a href="/" class="text-decoration-none">
+                    <h1 class="h4 m-0 text-primary fw-bold">Clinic</h1>
                 </a>
 
-                <nav id="navmenu" class="navmenu">
+                <!-- Main Menu -->
+                <nav class="navmenu d-none d-xl-block">
                     <ul>
                         <li><a href="/">Home</a></li>
                         <li><a href="/Home/About">About</a></li>
@@ -58,53 +72,37 @@
                         <li><a href="/Home/Doctors">Doctors</a></li>
                         <li><a href="/Home/Contact">Contact</a></li>
                     </ul>
-                    <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
                 </nav>
 
-                <div class="d-none d-sm-block">
-                    <a class="cta-btn me-2" href="/Appointment/Book">Book Appointment</a>
-                    <a class="cta-btn cta-btn-secondary" href="/Account/Login">Login</a>
+                <!-- User Menu -->
+                <div class="d-flex align-items-center gap-2">
+                    <partial name="_UserNav" />
+                    <i class="mobile-nav-toggle d-xl-none bi bi-list fs-3"></i>
                 </div>
 
             </div>
-
         </div>
 
     </header>
 
-  
-    <main class="main">
+    <main class="flex-grow-1">
+        <div class="container mt-3">
+            <partial name="_Alerts" />
+        </div>
+
         @RenderBody()
     </main>
 
-
-    <!-- Footer -->
-    <footer id="footer" class="footer light-background">
-        <div class="container footer-top">
-            <!-- KEEP FOOTER EXACTLY AS IS -->
-            <p class="text-center mt-3">© DEPI Student Banha - All Rights Reserved</p>
+    <footer class="bg-light border-top py-3 mt-auto">
+        <div class="container text-center text-muted">
+            © DEPI Student Banha - All Rights Reserved
         </div>
     </footer>
 
-    <!-- Scroll Top -->
-    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center">
-        <i class="bi bi-arrow-up-short"></i>
-    </a>
-
-    <!-- Preloader -->
-    <div id="preloader"></div>
-
-    <!-- Vendor JS Files -->
     <script src="~/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="~/assets/vendor/php-email-form/validate.js"></script>
-    <script src="~/assets/vendor/aos/aos.js"></script>
-    <script src="~/assets/vendor/glightbox/js/glightbox.min.js"></script>
-    <script src="~/assets/vendor/purecounter/purecounter_vanilla.js"></script>
-    <script src="~/assets/vendor/swiper/swiper-bundle.min.js"></script>
-
-    <!-- Main JS File -->
     <script src="~/assets/js/main.js"></script>
 
-</body>
+    @RenderSection("Scripts", required: false)
 
+</body>
 </html>
