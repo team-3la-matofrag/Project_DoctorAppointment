@@ -34,7 +34,7 @@ namespace Project.BLL.Services
             {
                 Id = d.Id,
                 FullName = d.User.FullName,
-                IsActive = d.IsActive 
+                IsActive = d.User.IsActive 
             }).ToList();
         }
 
@@ -63,7 +63,7 @@ namespace Project.BLL.Services
                 Id = a.Id,
                 DoctorName = a.Doctor.User.FullName,
                 PatientName = a.Patient.User.FullName,
-                Status = a.Status 
+                Status = a.Status.ToString()
             }).ToList();
         }
 

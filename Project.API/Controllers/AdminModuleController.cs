@@ -151,10 +151,15 @@ public class AdminModuleController : ControllerBase
             .Include(a => a.Patient).ThenInclude(p => p.User)
             .AsQueryable();
 
+
         if (!string.IsNullOrWhiteSpace(status))
         {
-            query = query.Where(a => a.Status == status);
+            if (Enum.TryParse<AppointmentStatus>(status, true, out var parsedStatus))
+            {
+                query = query.Where(a => a.Status == parsedStatus);
+            }
         }
+
 
         if (doctorId.HasValue)
         {

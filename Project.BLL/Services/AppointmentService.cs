@@ -8,35 +8,19 @@ namespace Project.BLL.Services
     public class AppointmentService : IAppointmentService
     {
         private readonly IAppointmentRepository _repo;
-        private readonly IDoctorRepository _doctorRepo;
 
-        public AppointmentService(IAppointmentRepository repo, IDoctorRepository doctorRepo)
+        public AppointmentService(IAppointmentRepository repo)
         {
             _repo = repo;
-            _doctorRepo = doctorRepo;
         }
 
-        public async Task<bool> CheckAvailabilityAsync(int doctorId, DateTime startAt, DateTime endAt)
-        {
-            return await _repo.IsAvailableAsync(doctorId, startAt, endAt);
-        }
-
-        public async Task<Appointment> AddAppointmentAsync(AppointmentDto dto)
+        public async Task CreateAsync(CreateAppointmentDto dto)
         {
             if (dto.EndAt <= dto.StartAt)
                 throw new Exception("Invalid time range");
 
-            var doctor = await _doctorRepo.GetByIdAsync(dto.DoctorId)
-                ?? throw new Exception("Doctor not found");
-
-           
-
-            var start = dto.StartAt.TimeOfDay;
-            var end = dto.EndAt.TimeOfDay;
-
-            if (start < doctor.WorkStart || end > doctor.WorkEnd)
-                throw new Exception("Outside working hours");
-
+            if (await _repo.HasConflictAsync(dto.DoctorId, dto.StartAt, dto.EndAt))
+                throw new Exception("Doctor is busy at this time");
 
             var appointment = new Appointment
             {
@@ -44,19 +28,22 @@ namespace Project.BLL.Services
                 PatientId = dto.PatientId,
                 StartAt = dto.StartAt,
                 EndAt = dto.EndAt,
-                Notes = dto.Notes ?? "",
-                Status = "Pending"
+                Notes = dto.Notes,
+                Status = AppointmentStatus.Pending
             };
 
-            return await _repo.AddAsync(appointment);
-        }
 
-        public async Task CancelAsync(int appointmentId)
+            await _repo.AddAsync(appointment);
+        }
+        public async Task CompleteAsync(int appointmentId)
         {
             var appointment = await _repo.GetByIdAsync(appointmentId)
                 ?? throw new Exception("Appointment not found");
 
-            appointment.Status = "Canceled";
+            if (appointment.Status != AppointmentStatus.Confirmed)
+                throw new Exception("Only confirmed appointments can be completed");
+
+            appointment.Status = AppointmentStatus.Completed;
             await _repo.SaveChangesAsync();
         }
 
@@ -65,48 +52,64 @@ namespace Project.BLL.Services
             var appointment = await _repo.GetByIdAsync(appointmentId)
                 ?? throw new Exception("Appointment not found");
 
-            appointment.Status = "Confirmed";
+            if (appointment.Status != AppointmentStatus.Pending)
+                throw new Exception("Only pending appointments can be confirmed");
+
+            appointment.Status = AppointmentStatus.Confirmed;
             await _repo.SaveChangesAsync();
         }
 
-        public async Task RescheduleAsync(
-            int appointmentId,
-            DateTime startAt,
-            DateTime endAt,
-            string? notes)
+        public async Task<List<AppointmentDetailsDto>> GetAllAsync()
         {
-            if (endAt <= startAt)
-                throw new Exception("Invalid time range");
+            var appointments = await _repo.GetAllWithUsersAsync();
 
-            var appointment = await _repo.GetByIdAsync(appointmentId)
+            return appointments.Select(a => new AppointmentDetailsDto
+            {
+                Id = a.Id,
+                StartAt = a.StartAt,
+                EndAt = a.EndAt,
+                Status = a.Status.ToString(),
+
+                DoctorId = a.DoctorId,
+                DoctorName = a.Doctor.User.FullName,
+
+                PatientId = a.PatientId,
+                PatientName = a.Patient.User.FullName
+            }).ToList();
+        }
+
+
+
+        public async Task CancelAsync(int id)
+        {
+            var appointment = await _repo.GetByIdAsync(id)
                 ?? throw new Exception("Appointment not found");
 
-            var available = await _repo.IsAvailableAsync(
-                appointment.DoctorId,
-                startAt,
-                endAt,
-                appointmentId);
-
-            if (!available)
-                throw new Exception("Time slot not available");
-
-            appointment.StartAt = startAt;
-            appointment.EndAt = endAt;
-            if (!string.IsNullOrWhiteSpace(notes))
-                appointment.Notes = notes;
-
+            appointment.Status = AppointmentStatus.Cancelled;
             await _repo.SaveChangesAsync();
         }
 
-        public Task<List<object>> GetMyAppointmentsAsync(int patientId)
-        {
-            return _repo.GetMyAppointmentsAsync(patientId);
-        }
+        public async Task<List<AppointmentDto>> GetDoctorAppointmentsAsync(int doctorId)
+            => (await _repo.GetByDoctorAsync(doctorId))
+                .Select(Map)
+                .ToList();
 
-        public Task<List<object>> GetTodayAppointmentsAsync(int doctorId)
+        public async Task<List<AppointmentDto>> GetPatientAppointmentsAsync(int patientId)
+            => (await _repo.GetByPatientAsync(patientId))
+                .Select(Map)
+                .ToList();
+
+        private AppointmentDto Map(Appointment a) => new()
         {
-            return _repo.GetTodayAppointmentsAsync(doctorId);
-        }
+            Id = a.Id,
+            StartAt = a.StartAt,
+            EndAt = a.EndAt,
+            Status = a.Status.ToString()
+        };
+
+
+       
 
     }
+
 }

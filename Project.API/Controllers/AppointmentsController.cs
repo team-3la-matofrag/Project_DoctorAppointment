@@ -6,6 +6,7 @@ using Project.BLL.Interfaces;
 namespace Project.API.Controllers
 {
     [ApiController]
+    [Route("api/appointments")]
     public class AppointmentsController : ControllerBase
     {
         private readonly IAppointmentService _service;
@@ -15,66 +16,50 @@ namespace Project.API.Controllers
             _service = service;
         }
 
-
-        [HttpGet("/appointment/check")]
-        public async Task<IActionResult> CheckAvailability(
-            int doctorId,
-            DateTime startAt,
-            DateTime endAt)
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
-            var available = await _service.CheckAvailabilityAsync(doctorId, startAt, endAt);
-            return Ok(new { available });
+            var result = await _service.GetAllAsync();
+            return Ok(result);
         }
 
-        [HttpPost("/appointment/add")]
-        public async Task<IActionResult> Add([FromBody] AppointmentDto dto)
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateAppointmentDto dto)
         {
-            try
-            {
-                var result = await _service.AddAppointmentAsync(dto);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            await _service.CreateAsync(dto);
+            return Ok();
         }
 
-        [HttpPost("/appointment/cancel/{id:int}")]
+        [HttpPost("{id}/cancel")]
         public async Task<IActionResult> Cancel(int id)
         {
             await _service.CancelAsync(id);
             return Ok();
         }
-
-        [HttpPost("/appointment/confirm/{id:int}")]
+        [HttpPost("{id}/confirm")]
         public async Task<IActionResult> Confirm(int id)
         {
             await _service.ConfirmAsync(id);
+            return Ok(new { message = "Appointment confirmed successfully" });
+        }
+
+        [HttpPut("appointments/{id}/complete")]
+        public async Task<IActionResult> Complete(int id)
+        {
+            await _service.CompleteAsync(id);
             return Ok();
         }
 
-        [HttpPost("/appointment/reschedule/{id:int}")]
-        public async Task<IActionResult> Reschedule(
-            int id,
-            DateTime startAt,
-            DateTime endAt,
-            string? notes)
-        {
-            await _service.RescheduleAsync(id, startAt, endAt, notes);
-            return Ok();
-        }
 
-        [HttpGet("/appointment/my")]
-        public async Task<IActionResult> My(int patientId)
-        {
-            return Ok(await _service.GetMyAppointmentsAsync(patientId));
-        }
+        [HttpGet("doctor/{doctorId}")]
+        public async Task<IActionResult> Doctor(int doctorId)
+            => Ok(await _service.GetDoctorAppointmentsAsync(doctorId));
 
-        [HttpGet("/appointment/today")]
-        public async Task<IActionResult> Today(int doctorId)
-        {
-            return Ok(await _service.GetTodayAppointmentsAsync(doctorId));
-        }
+        [HttpGet("patient/{patientId}")]
+        public async Task<IActionResult> Patient(int patientId)
+            => Ok(await _service.GetPatientAppointmentsAsync(patientId));
     }
+
+
 }

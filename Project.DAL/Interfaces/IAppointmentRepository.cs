@@ -1,21 +1,13 @@
 ﻿using Project.DAL.Models;
 
-namespace Project.DAL.Interfaces
+public interface IAppointmentRepository
 {
-    public interface IAppointmentRepository
-    {
-        Task<bool> IsAvailableAsync(
-            int doctorId,
-            DateTime startAt,
-            DateTime endAt,
-            int? excludeId = null);
+    Task AddAsync(Appointment appointment);
+    Task<Appointment?> GetByIdAsync(int id);
+    Task<List<Appointment>> GetByDoctorAsync(int doctorId);
+    Task<List<Appointment>> GetByPatientAsync(int patientId);
+    Task<List<Appointment>> GetAllWithUsersAsync();
 
-        Task<Appointment> AddAsync(Appointment appointment);
-        Task<Appointment?> GetByIdAsync(int id);
-        Task SaveChangesAsync();
-
-      
-        Task<List<object>> GetMyAppointmentsAsync(int patientId);
-        Task<List<object>> GetTodayAppointmentsAsync(int doctorId);
-    }
+    Task<bool> HasConflictAsync(int doctorId, DateTime start, DateTime end);
+    Task SaveChangesAsync();
 }

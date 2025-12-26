@@ -14,9 +14,14 @@
         public DateTime StartAt { get; set; }
         public DateTime EndAt { get; set; }
 
-        public string Status { get; set; }  // Pending / Confirmed / Completed / Canceled
-        public string Notes { get; set; }
+        public AppointmentStatus Status { get; set; }
+
+        public string? Notes { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<Notification> Notifications { get; set; }
+      = new List<Notification>();
     }
+
 }

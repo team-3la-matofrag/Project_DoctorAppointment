@@ -54,7 +54,7 @@ namespace Project.DAL.Repositories
             var doctor = await _context.Doctors.FindAsync(doctorId);
             if (doctor != null)
             {
-                doctor.IsActive = true;
+                doctor.User.IsActive = true;
                 await _context.SaveChangesAsync();
             }
         }
@@ -62,11 +62,12 @@ namespace Project.DAL.Repositories
         public async Task ForceCancelAppointmentAsync(int appointmentId)
         {
             var appointment = await _context.Appointments.FindAsync(appointmentId);
-            if (appointment != null)
-            {
-                appointment.Status = "Cancelled";
-                await _context.SaveChangesAsync();
-            }
+
+            if (appointment == null)
+                throw new Exception("Appointment not found");
+
+            appointment.Status = AppointmentStatus.Cancelled; 
+            await _context.SaveChangesAsync();
         }
     }
 }

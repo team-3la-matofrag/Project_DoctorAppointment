@@ -70,6 +70,11 @@ namespace Project.DAL.Data
                 .HasForeignKey(n => n.AppointmentId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Appointment>()
+            .Property(a => a.Status)
+           .HasConversion<int>();
+            base.OnModelCreating(modelBuilder);
+
             // NOTIFICATION
             modelBuilder.Entity<Notification>(entity =>
             {
