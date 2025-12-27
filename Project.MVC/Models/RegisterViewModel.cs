@@ -22,5 +22,11 @@ namespace Project.MVC.Models
         public string ConfirmPassword { get; set; }
         public string Phone { get; set; }
         public string? ErrorMessage { get; set; }
+
+        [Required(ErrorMessage = "Date of birth is required")]
+        public DateTime DOB { get; set; }
+
+        [Required(ErrorMessage = "Gender is required")]
+        public string Gender { get; set; }
     }
 }

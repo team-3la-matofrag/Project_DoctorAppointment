@@ -17,5 +17,7 @@ namespace Project.BLL.DTOs
         public string Phone { get; set; }
 
         public string Role { get; set; } = "Patient";
+        public DateTime DateOfBirth { get; set; }
+        public string gender { get; set; }
     }
 }

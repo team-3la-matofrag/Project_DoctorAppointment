@@ -9,12 +9,14 @@ namespace Project.BLL.Services
     public class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IPatientRepository _patientRepository;
         private readonly PasswordHasher<User> _passwordHasher;
 
-        public AuthService(IUserRepository userRepository)
+        public AuthService(IUserRepository userRepository, IPatientRepository patientRepository)
         {
             _userRepository = userRepository;
             _passwordHasher = new PasswordHasher<User>();
+            _patientRepository = patientRepository;
         }
 
         public async Task<object> LoginAsync(LoginDto dto)
@@ -77,6 +79,17 @@ namespace Project.BLL.Services
 
             await _userRepository.AddAsync(user);
             await _userRepository.SaveChangesAsync();
+            if(user.Role == "Patient")
+            {
+                var patient = new Patient
+                {
+                    UserId = user.Id,
+                    DOB = dto.DateOfBirth,
+                    Gender =dto.gender
+                };
+                await _patientRepository.AddAsync(patient);
+                await _patientRepository.SaveChangesAsync();
+            }
 
             return new
             {

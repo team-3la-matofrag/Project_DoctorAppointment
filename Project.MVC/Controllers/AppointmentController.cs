@@ -12,13 +12,24 @@ namespace Project.MVC.Controllers
 
             return View();
         }
-        public IActionResult Book() => View();
-        public IActionResult MyAppointments()
+
+        public IActionResult Book()
         {
-            int userId = GetCurrentUserId();
-          
+            if (!IsAuthenticated())
+                return RedirectToAction("Login", "Account");
+
             return View();
         }
+        public IActionResult MyAppointments()
+        {
+            if (!IsAuthenticated())
+                return RedirectToAction("Login", "Account");
 
+
+            int userId = GetCurrentUserId();
+            return View();
+
+        }
+      
     }
 }
