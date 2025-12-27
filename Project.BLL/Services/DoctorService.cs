@@ -31,8 +31,8 @@ namespace Project.BLL.Services
                 Email = d.User.Email,
                 Specialization = d.Specialization.Name,
                 IsActive = d.User.IsActive,
-               WorkStart =d.WorkStart,
-               WorkEnd=d.WorkEnd,
+               WorkStart =d.WorkStart.ToString(),
+               WorkEnd=d.WorkEnd.ToString(),
                ClinicAddress=d.ClinicAddress
 
             }).ToList();
@@ -50,8 +50,8 @@ namespace Project.BLL.Services
                 Email = d.User.Email,
                 Specialization = d.Specialization.Name,
                 IsActive = d.User.IsActive,
-                 WorkStart = d.WorkStart,
-                WorkEnd = d.WorkEnd,
+                 WorkStart = d.WorkStart.ToString(),
+                WorkEnd = d.WorkEnd.ToString(),
                 ClinicAddress = d.ClinicAddress
             };
         }
@@ -83,8 +83,8 @@ namespace Project.BLL.Services
 
             doctor.User.IsActive = dto.IsActive;
             doctor.ClinicAddress = dto.ClinicAddress;
-            doctor.WorkStart = dto.WorkStart;
-            doctor.WorkEnd = dto.WorkEnd;
+            doctor.WorkStart = TimeSpan.Parse(dto.WorkStart);
+            doctor.WorkEnd = TimeSpan.Parse(dto.WorkEnd);
             doctor.User.FullName = dto.FullName;
             doctor.User.Email = dto.Email;
             

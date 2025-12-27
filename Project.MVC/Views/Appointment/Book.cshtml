@@ -38,12 +38,8 @@
                     </select>
                 </div>
                 <div class="col-md-4 form-group mt-3">
-                    <select name="doctor" class="form-select">
-                        <option value="">Select Doctor (Optional)</option>
-                        <option value="Dr. Anderson">Dr. William Anderson</option>
-                        <option value="Dr. Johnson">Dr. Sarah Johnson</option>
-                        <option value="Dr. White">Dr. Walter White</option>
-                        <option value="Dr. Jepson">Dr. Amanda Jepson</option>
+                    <select name="doctor" class="form-select" required>
+                        <option value="">Select Doctor</option>
                     </select>
                 </div>
             </div>
@@ -59,3 +55,25 @@
     </div>
 
 </section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('select[name="department"]').change(function() {
+                var specialty = $(this).val();
+                var doctorSelect = $('select[name="doctor"]');
+                
+                doctorSelect.empty();
+                doctorSelect.append('<option value="">Select Doctor</option>');
+                
+                if(specialty) {
+                    $.getJSON('/Appointment/GetDoctorsBySpecialty', { specialty: specialty }, function(data) {
+                        $.each(data, function(index, doctor) {
+                            doctorSelect.append('<option value="' + doctor.id + '">' + doctor.fullName + '</option>');
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+}

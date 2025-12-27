@@ -42,7 +42,8 @@
                 }
                 @if (user.Role == "Patient")
                 {
-                    <li><a class="dropdown-item rounded-3 py-2" asp-controller="Appointments" asp-action="My"><i class="bi bi-clock-history me-2"></i>My Bookings</a></li>
+                    <li><a class="dropdown-item rounded-3 py-2" asp-controller="Patient" asp-action="Dashboard"><i class="bi bi-grid-1x2 me-2"></i>Dashboard</a></li>
+                    <li><a class="dropdown-item rounded-3 py-2" asp-controller="Patient" asp-action="Appointments"><i class="bi bi-clock-history me-2"></i>My Bookings</a></li>
                 }
 
                 <li><hr class="dropdown-divider"></li>

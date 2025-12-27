@@ -52,6 +52,22 @@ namespace Project.MVC.Services
             return JsonSerializer.Deserialize<TResponse>(json,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
+
+        public async Task PostAsync<TRequest>( string url, TRequest data)
+        {
+            var content = new StringContent(
+                JsonSerializer.Serialize(data),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PostAsync(url, content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
+        }
         public async Task PutAsync<T>(string url, T data)
         {
             var content = new StringContent(

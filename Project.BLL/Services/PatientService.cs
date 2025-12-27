@@ -94,7 +94,7 @@ namespace Project.BLL.Services
                 a.Id,
                 a.StartAt,
                 a.EndAt,
-                a.Status,
+                Status = a.Status.ToString(),
                 a.Notes,
                 DoctorName = a.Doctor?.User?.FullName ?? "Unknown",
                 IsUpcoming = a.StartAt >= now
