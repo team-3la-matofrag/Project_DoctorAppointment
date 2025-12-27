@@ -1,0 +1,56 @@
+﻿@model Project.MVC.Models.DoctorViewModel
+
+@{
+    ViewData["Title"] = "Doctor Details";
+}
+
+<section id="doctor-details" class="doctor-details section mt-5">
+    <div class="container" data-aos="fade-up">
+        <div class="row gy-4">
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0">
+                    <img src="@(string.IsNullOrEmpty(Model.PhotoUrl) ? "/assets/img/doctors/doctors-1.jpg" : Model.PhotoUrl)"
+                         class="card-img-top img-fluid" alt="@Model.FullName">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold">@Model.FullName</h3>
+                        <p class="text-primary fw-semibold">@Model.Specialty</p>
+                        <hr>
+                        <a asp-controller="Appointment" asp-action="Book" asp-route-doctorId="@Model.Id"
+                           class="btn btn-primary btn-lg w-100">Book Appointment Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="bg-white p-4 shadow-sm rounded">
+                    <h4 class="mb-4 text-primary"><i class="bi bi-person-badge me-2"></i>Professional Profile</h4>
+
+                    <div class="mb-4">
+                        <h5 class="fw-bold">About the Doctor:</h5>
+                        <p class="text-muted">@Model.Bio</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="fw-bold"><i class="bi bi-mortarboard me-2"></i>Educational Qualifications:</h5>
+                        <p>@Model.Qualifications</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="fw-bold"><i class="bi bi-clock me-2"></i>Working Hours:</h5>
+                        <div class="alert alert-light border">
+                            @Model.WorkHours
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <a asp-action="Doctors" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Doctors List
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>

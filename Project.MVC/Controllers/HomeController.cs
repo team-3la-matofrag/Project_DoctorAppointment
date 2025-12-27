@@ -8,35 +8,23 @@ namespace Project.MVC.Controllers
     {
         public IActionResult Index()
         {
-            if (!IsAuthenticated())
-                return RedirectToAction("Login", "Account");
-
             return View();
         }
 
         public IActionResult Services()
         {
-            if (!IsAuthenticated())
-                return RedirectToAction("Login", "Account");
-
             return View();
         }
 
         public IActionResult Doctors()
         {
-            if (!IsAuthenticated())
-                return RedirectToAction("Login", "Account");
-
             return View();
         }
+
         public IActionResult Departments()
         {
-            if (!IsAuthenticated())
-                return RedirectToAction("Login", "Account");
-
             return View();
         }
-
 
         public IActionResult About() => View();
 

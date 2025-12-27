@@ -4,49 +4,53 @@
     ViewData["Title"] = "Login";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-4">
-
-            <div class="card shadow border-0 rounded-3">
-                <div class="card-body p-4">
-
-                    <h3 class="text-center mb-4 fw-bold text-primary">Login</h3>
-
-                    <form asp-action="Login" method="post">
-
-                        <div class="mb-3">
-                            <label asp-for="Email" class="form-label fw-semibold">Email Address</label>
-                            <input asp-for="Email" class="form-control" placeholder="name@example.com" />
-                            <span asp-validation-for="Email" class="text-danger small"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Password" class="form-label fw-semibold">Password</label>
-                            <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" />
-                            <span asp-validation-for="Password" class="text-danger small"></span>
-                        </div>
-
-                        @if (Model != null && !string.IsNullOrEmpty(Model.ErrorMessage))
-                        {
-                            <div class="alert alert-danger text-center p-2" role="alert">
-                                @Model.ErrorMessage
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="col-md-5">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="row g-0">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div class="icon-shape bg-primary text-white rounded-circle shadow mb-3 d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                                <i class="bi bi-shield-lock fs-2"></i>
                             </div>
-                        }
-
-                        <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                            <h2 class="fw-bold text-dark">Welcome Back</h2>
+                            <p class="text-muted">Login to manage your appointments</p>
                         </div>
 
-                    </form>
-                </div>
+                        <form asp-action="Login" method="post">
+                            <div class="form-floating mb-3">
+                                <input asp-for="Email" class="form-control border-0 bg-light rounded-3" placeholder="name@example.com" />
+                                <label asp-for="Email" class="text-muted">Email Address</label>
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
 
-                <div class="card-footer text-center py-3 bg-light border-0 rounded-bottom-3">
-                    <span class="text-muted">Don't have an account?</span>
-                    <a asp-action="Register" class="text-decoration-none fw-bold">Register</a>
+                            <div class="form-floating mb-3">
+                                <input asp-for="Password" type="password" class="form-control border-0 bg-light rounded-3" placeholder="••••••••" />
+                                <label asp-for="Password" class="text-muted">Password</label>
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
+
+                            @if (Model != null && !string.IsNullOrEmpty(Model.ErrorMessage))
+                            {
+                                <div class="alert alert-danger border-0 rounded-3 small py-2" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i> @Model.ErrorMessage
+                                </div>
+                            }
+
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg rounded-3 shadow-sm py-3 fw-bold">
+                                    Sign In <i class="bi bi-arrow-right-short ms-1"></i>
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="text-center mt-4">
+                            <p class="mb-0 text-muted">New member? <a asp-action="Register" class="text-primary fw-bold text-decoration-none">Create an account</a></p>
+                        </div>
+                    </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>

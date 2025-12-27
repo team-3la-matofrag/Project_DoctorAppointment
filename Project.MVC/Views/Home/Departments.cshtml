@@ -1,57 +1,157 @@
 ﻿@{
-    ViewData["Title"] = "Departments";
+    ViewData["Title"] = "Medical Specialties";
 }
 
-<section id="departments" class="departments section">
+<style>
+    .depts-section {
+        padding: 80px 0;
+        background: linear-gradient(180deg, #fff 0%, #f4f9ff 100%);
+    }
 
-    <div class="container section-title" data-aos="fade-up">
-        <h2>Medical Specialties</h2>
-        <p>Browse our network of healthcare professionals across multiple specialties</p>
-    </div>
+    /* تصميم القائمة الجانبية */
+    .dept-tabs-wrapper {
+        background: #fff;
+        padding: 15px;
+        border-radius: 25px;
+        box-shadow: 0 15px 35px rgba(13, 110, 253, 0.05);
+        border: 1px solid #edf2f9;
+    }
 
-    <div class="container" data-aos="fade-up" data-aos-delay="100">
+    .nav-pills .nav-link {
+        padding: 15px 25px;
+        border-radius: 15px;
+        color: #555;
+        font-weight: 600;
+        margin-bottom: 10px;
+        transition: 0.4s;
+        border: 1px solid transparent;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
 
-        <div class="row">
-            <div class="col-lg-3">
-                <ul class="nav nav-tabs flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active show" data-bs-toggle="tab" href="#departments-tab-1">Cardiology</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#departments-tab-2">Neurology</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#departments-tab-3">Hepatology</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#departments-tab-4">Pediatrics</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#departments-tab-5">Eye Care</a>
-                    </li>
-                </ul>
+        .nav-pills .nav-link i {
+            font-size: 20px;
+        }
+
+        .nav-pills .nav-link.active {
+            background: #0d6efd;
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(13, 110, 253, 0.2);
+        }
+
+        .nav-pills .nav-link:not(.active):hover {
+            background: #f8fbff;
+            color: #0d6efd;
+            border-color: rgba(13, 110, 253, 0.1);
+        }
+
+    /* محتوى القسم */
+    .tab-content-wrapper {
+        background: #fff;
+        border-radius: 30px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        min-height: 450px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dept-info h3 {
+        color: #0d6efd;
+        font-weight: 800;
+        margin-bottom: 20px;
+        font-size: 2rem;
+    }
+
+    .dept-img-frame {
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+
+    .feature-tag {
+        display: inline-block;
+        padding: 5px 15px;
+        background: #e7f1ff;
+        color: #0d6efd;
+        border-radius: 50px;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+</style>
+
+<section class="depts-section">
+    <div class="container" data-aos="fade-up">
+
+        <div class="text-center mb-5">
+            <h2 class="fw-bold display-5">Explore Our <span class="text-primary">Specialties</span></h2>
+            <p class="text-muted">High-quality care across a wide range of medical fields.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="dept-tabs-wrapper" data-aos="fade-right">
+                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <button class="nav-link active" id="tab-1-btn" data-bs-toggle="pill" data-bs-target="#tab-1" type="button">
+                            <i class="bi bi-heart-pulse"></i> Cardiology
+                        </button>
+                        <button class="nav-link" id="tab-2-btn" data-bs-toggle="pill" data-bs-target="#tab-2" type="button">
+                            <i class="bi bi-activity"></i> Neurology
+                        </button>
+                        <button class="nav-link" id="tab-3-btn" data-bs-toggle="pill" data-bs-target="#tab-3" type="button">
+                            <i class="bi bi-droplet-half"></i> Hepatology
+                        </button>
+                        <button class="nav-link" id="tab-4-btn" data-bs-toggle="pill" data-bs-target="#tab-4" type="button">
+                            <i class="bi bi-emoji-smile"></i> Pediatrics
+                        </button>
+                        <button class="nav-link" id="tab-5-btn" data-bs-toggle="pill" data-bs-target="#tab-5" type="button">
+                            <i class="bi bi-eye"></i> Eye Care
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-9 mt-4 mt-lg-0">
-                <div class="tab-content">
-                    <div class="tab-pane active show" id="departments-tab-1">
-                        <div class="row">
-                            <div class="col-lg-8 details order-2 order-lg-1">
-                                <h3>Cardiology</h3>
-                                <p class="fst-italic">Qui laudantium consequatur laborum sit qui ad sapiente...</p>
-                                <p>Et nobis maiores eius. Voluptatibus ut enim blanditiis atque harum sint...</p>
+
+            <div class="col-lg-8">
+                <div class="tab-content tab-content-wrapper" id="v-pills-tabContent" data-aos="fade-left">
+
+                    <div class="tab-pane fade show active" id="tab-1" role="tabpanel">
+                        <div class="row align-items-center">
+                            <div class="col-md-7 dept-info">
+                                <span class="feature-tag">Heart Specialist Center</span>
+                                <h3>Cardiology Department</h3>
+                                <p class="lead fw-normal text-dark">Expert care for your heart with advanced diagnostic technology.</p>
+                                <p class="text-muted">Our cardiologists specialize in diagnosing and treating diseases of the cardiovascular system. From routine checkups to complex surgeries, your heart is in safe hands.</p>
+                                <a href="/Home/Doctors?specialty=Cardiology" class="btn btn-primary rounded-pill px-4 mt-3">Find a Specialist</a>
                             </div>
-                            <div class="col-lg-4 text-center order-1 order-lg-2">
-                                <img src="~/assets/img/departments-1.jpg" alt="" class="img-fluid">
+                            <div class="col-md-5 mt-4 mt-md-0">
+                                <div class="dept-img-frame">
+                                    <img src="~/assets/img/departments-1.jpg" class="img-fluid" alt="Cardiology">
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- باقي التابات زي ما هي بنفس الكود مع تعديل src لصور بـ ~/assets/... -->
+                    <div class="tab-pane fade" id="tab-2" role="tabpanel">
+                        <div class="row align-items-center">
+                            <div class="col-md-7 dept-info">
+                                <span class="feature-tag">Brain & Nerve Care</span>
+                                <h3>Neurology Department</h3>
+                                <p class="lead fw-normal text-dark">Comprehensive neuro-diagnostic and therapeutic services.</p>
+                                <p class="text-muted">We provide expert evaluation and treatment for disorders of the brain, spinal cord, and peripheral nerves, ensuring a better quality of life.</p>
+                                <a href="/Home/Doctors?specialty=Neurology" class="btn btn-primary rounded-pill px-4 mt-3">Find a Specialist</a>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="dept-img-frame">
+                                    <img src="~/assets/img/departments-2.jpg" class="img-fluid" alt="Neurology">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>
         </div>
-
     </div>
-
 </section>

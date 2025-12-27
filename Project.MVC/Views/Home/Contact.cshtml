@@ -1,85 +1,134 @@
 ﻿@{
-    ViewData["Title"] = "Contact";
+    ViewData["Title"] = "Contact Us";
 }
 
-<section id="contact" class="contact section">
+<style>
+    .contact-creative {
+        padding: 80px 0;
+        background: #fcfdfe;
+    }
 
-    <div class="container section-title" data-aos="fade-up">
-        <h2>Contact</h2>
-        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-    </div>
+    /* كروت المعلومات */
+    .info-card-custom {
+        background: #fff;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+        transition: 0.3s;
+        border: 1px solid #f1f1f1;
+    }
 
-    <div class="mb-5" data-aos="fade-up" data-aos-delay="200">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d55027.1220979017!2d31.14713609346925!3d30.45891070039264!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x145875f6592ee989%3A0xa0f7a3872335c0ce!2sBanha%2C%20Qism%20Banha%2C%20Banha%2C%20Al-Qalyubia%20Governorate!5e0!3m2!1sen!2seg!4v1764599267300!5m2!1sen!2seg"
-                width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"></iframe>
-    </div>
+        .info-card-custom:hover {
+            transform: translateY(-5px);
+            border-color: #0d6efd;
+        }
 
-    <div class="container" data-aos="fade-up" data-aos-delay="100">
+    .info-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
 
-        <div class="row gy-4">
+    /* تصميم الفورم */
+    .contact-form-wrapper {
+        background: #fff;
+        padding: 40px;
+        border-radius: 25px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+    }
 
+    .form-control-custom {
+        border: 1px solid #eee;
+        padding: 15px 20px;
+        border-radius: 12px;
+        background: #f9f9f9;
+        transition: 0.3s;
+    }
+
+        .form-control-custom:focus {
+            background: #fff;
+            border-color: #0d6efd;
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.05);
+            outline: none;
+        }
+
+    .map-container {
+        border-radius: 25px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-top: 50px;
+    }
+</style>
+
+<section class="contact-creative">
+    <div class="container" data-aos="fade-up">
+
+        <div class="text-center mb-5">
+            <span class="badge bg-primary-soft text-primary px-3 py-2 rounded-pill mb-2">Get In Touch</span>
+            <h2 class="fw-bold display-5">Let's Start a <span class="text-primary">Conversation</span></h2>
+            <p class="text-muted">Reach out to us for any inquiries or support regarding your appointments.</p>
+        </div>
+
+        <div class="row g-4">
             <div class="col-lg-4">
-                <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
-                    <i class="bi bi-geo-alt flex-shrink-0"></i>
-                    <div>
-                        <h3>Location</h3>
-                        <p>Banha, Qalyubiyah Governorate, Egypt</p>
-                    </div>
+                <div class="info-card-custom" data-aos="fade-right" data-aos-delay="100">
+                    <div class="info-icon"><i class="bi bi-geo-alt"></i></div>
+                    <h5 class="fw-bold">Our Location</h5>
+                    <p class="text-muted mb-0">A108 Adam Street, New York, NY 535022</p>
                 </div>
 
-                <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
-                    <i class="bi bi-telephone flex-shrink-0"></i>
-                    <div>
-                        <h3>Call Us</h3>
-                        <p>+20 132 260 0000</p>
-                    </div>
+                <div class="info-card-custom" data-aos="fade-right" data-aos-delay="200">
+                    <div class="info-icon"><i class="bi bi-telephone"></i></div>
+                    <h5 class="fw-bold">Call Us</h5>
+                    <p class="text-muted mb-0">+1 5589 55488 55</p>
                 </div>
 
-                <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="500">
-                    <i class="bi bi-envelope flex-shrink-0"></i>
-                    <div>
-                        <h3>Email Us</h3>
-                        <p>info@medilab-banha.eg</p>
-                    </div>
+                <div class="info-card-custom" data-aos="fade-right" data-aos-delay="300">
+                    <div class="info-icon"><i class="bi bi-envelope"></i></div>
+                    <h5 class="fw-bold">Email Us</h5>
+                    <p class="text-muted mb-0">support@docsystem.com</p>
                 </div>
-
             </div>
 
             <div class="col-lg-8">
-                <form action="#" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
-                    <div class="row gy-4">
-
-                        <div class="col-md-6">
-                            <input type="text" name="name" class="form-control" placeholder="Your Name" required="">
+                <div class="contact-form-wrapper" data-aos="fade-left">
+                    <form action="#" method="post" class="php-email-form">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <input type="text" name="name" class="form-control form-control-custom" placeholder="Full Name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="email" name="email" class="form-control form-control-custom" placeholder="Your Email" required>
+                            </div>
+                            <div class="col-12">
+                                <input type="text" name="subject" class="form-control form-control-custom" placeholder="Subject" required>
+                            </div>
+                            <div class="col-12">
+                                <textarea name="message" class="form-control form-control-custom" rows="5" placeholder="How can we help you?" required></textarea>
+                            </div>
+                            <div class="col-12 text-center mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow">
+                                    Send Message <i class="bi bi-send ms-2"></i>
+                                </button>
+                            </div>
                         </div>
-
-                        <div class="col-md-6 ">
-                            <input type="email" class="form-control" name="email" placeholder="Your Email" required="">
-                        </div>
-
-                        <div class="col-md-12">
-                            <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
-                        </div>
-
-                        <div class="col-md-12">
-                            <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
-                        </div>
-
-                        <div class="col-md-12 text-center">
-                            <div class="loading">Loading</div>
-                            <div class="error-message"></div>
-                            <div class="sent-message">Your message has been sent. Thank you!</div>
-
-                            <button type="submit">Send Message</button>
-                        </div>
-
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
+        </div>
 
+        <div class="map-container" data-aos="zoom-in">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3023.952212236894!2d-74.0059418!3d40.7127753!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a22a3bda6f5%3A0xab3f69503361711!2sManhattan%2C%20New%20York%2C%20NY!5e0!3m2!1sen!2sus!4v1647384500000!5m2!1sen!2sus"
+                    width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
         </div>
 
     </div>
-
 </section>

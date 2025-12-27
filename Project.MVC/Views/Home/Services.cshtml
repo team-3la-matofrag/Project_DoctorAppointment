@@ -2,79 +2,155 @@
     ViewData["Title"] = "System Features";
 }
 
-<section id="services" class="services section">
+<style>
+    .services-creative {
+        padding: 80px 0;
+        background: #fff;
+    }
 
-    <div class="container section-title" data-aos="fade-up">
-        <h2>System Features</h2>
-        <p>Complete appointment management solution for patients, doctors, and administrators</p>
-    </div>
+    /* كرت الخدمة المطور */
+    .service-box {
+        padding: 40px 30px;
+        border-radius: 25px;
+        background: #ffffff;
+        border: 1px solid #f0f0f0;
+        text-align: center;
+        transition: all 0.4s ease-in-out;
+        height: 100%;
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+    }
 
-    <div class="container">
+        /* خلفية مخفية تظهر عند الحوم */
+        .service-box::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            transition: all 0.4s ease-in-out;
+            z-index: -1;
+        }
 
-        <div class="row gy-4">
+        .service-box:hover::before {
+            height: 100%;
+        }
 
+        .service-box:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(13, 110, 253, 0.15);
+        }
+
+            .service-box:hover h3,
+            .service-box:hover p {
+                color: #fff !important;
+            }
+
+    /* تصميم الأيقونة السداسي */
+    .icon-shape-custom {
+        width: 80px;
+        height: 80px;
+        background: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        font-size: 32px;
+        border-radius: 20px;
+        transform: rotate(45deg);
+        transition: 0.4s;
+    }
+
+        .icon-shape-custom i {
+            transform: rotate(-45deg);
+        }
+
+    .service-box:hover .icon-shape-custom {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        transform: rotate(0deg);
+    }
+
+        .service-box:hover .icon-shape-custom i {
+            transform: rotate(0deg);
+        }
+
+    .service-box h3 {
+        font-weight: 700;
+        margin-bottom: 15px;
+        transition: 0.3s;
+    }
+
+    .service-box p {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #6c757d;
+        transition: 0.3s;
+    }
+</style>
+
+<section class="services-creative">
+    <div class="container" data-aos="fade-up">
+
+        <div class="text-center mb-5">
+            <span class="badge bg-primary-soft text-primary px-3 py-2 rounded-pill mb-3">Core Features</span>
+            <h2 class="display-5 fw-bold">Smart Solutions for <span class="text-primary">Modern Healthcare</span></h2>
+            <p class="text-muted mx-auto" style="max-width: 600px;">Our system provides a robust set of tools tailored for patients, doctors, and clinic administrators.</p>
+        </div>
+
+        <div class="row g-4">
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                <div class="service-item position-relative">
-                    <div class="icon">
-                        <i class="fas fa-search"></i>
-                    </div>
+                <div class="service-box">
+                    <div class="icon-shape-custom"><i class="bi bi-search-heart"></i></div>
                     <h3>Doctor Search</h3>
-                    <p>Search and filter doctors by specialty, experience, fees, and availability. Find the perfect healthcare provider for your needs.</p>
+                    <p>Advanced filtering by specialty, experience, and availability to find the right care for your needs.</p>
                 </div>
             </div>
 
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="service-item position-relative">
-                    <div class="icon">
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                    <h3>Schedule Management</h3>
-                    <p>Doctors can set their availability and manage appointments. Patients can view real-time slots and book instantly.</p>
+                <div class="service-box">
+                    <div class="icon-shape-custom"><i class="bi bi-calendar2-range"></i></div>
+                    <h3>Smart Scheduling</h3>
+                    <p>Dynamic time slots for doctors and instant booking confirmation for patients in real-time.</p>
                 </div>
             </div>
 
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                <div class="service-item position-relative">
-                    <div class="icon">
-                        <i class="fas fa-file-medical"></i>
-                    </div>
-                    <h3>Medical Records</h3>
-                    <p>Secure storage and management of patient medical history, prescriptions, and health information.</p>
+                <div class="service-box">
+                    <div class="icon-shape-custom"><i class="bi bi-bell-fill"></i></div>
+                    <h3>Auto Reminders</h3>
+                    <p>Never miss a visit. Automated email and SMS notifications for all your upcoming medical appointments.</p>
                 </div>
             </div>
 
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                <div class="service-item position-relative">
-                    <div class="icon">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <h3>Smart Notifications</h3>
-                    <p>Automatic appointment reminders via email and SMS. Never miss your scheduled appointments.</p>
+                <div class="service-box">
+                    <div class="icon-shape-custom"><i class="bi bi-shield-lock-fill"></i></div>
+                    <h3>Secure Access</h3>
+                    <p>Highly secure authentication and role-based access to keep patient data private and protected.</p>
                 </div>
             </div>
 
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
-                <div class="service-item position-relative">
-                    <div class="icon">
-                        <i class="fas fa-lock"></i>
-                    </div>
-                    <h3>Secure Authentication</h3>
-                    <p>Role-based access control with secure login for patients, doctors, and administrators. Your data is protected.</p>
+                <div class="service-box">
+                    <div class="icon-shape-custom"><i class="bi bi-cpu-fill"></i></div>
+                    <h3>Admin Hub</h3>
+                    <p>Comprehensive dashboard for managing clinic operations, verifying doctors, and viewing reports.</p>
                 </div>
             </div>
 
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
-                <div class="service-item position-relative">
-                    <div class="icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <h3>Admin Dashboard</h3>
-                    <p>Comprehensive system monitoring, user management, appointment oversight, and detailed reporting for administrators.</p>
+                <div class="service-box">
+                    <div class="icon-shape-custom"><i class="bi bi-file-earmark-medical"></i></div>
+                    <h3>Digital Records</h3>
+                    <p>Access your medical history and appointment logs anytime through your personalized patient profile.</p>
                 </div>
             </div>
 
         </div>
-
     </div>
-
 </section>

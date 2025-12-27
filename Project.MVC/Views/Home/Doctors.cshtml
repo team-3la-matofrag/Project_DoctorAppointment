@@ -1,35 +1,197 @@
-﻿@{
-    ViewData["Title"] = "Doctors";
+﻿@model List<Project.MVC.Models.DoctorViewModel>
+
+@{
+    ViewData["Title"] = "Find Your Doctor";
 }
 
-<section id="doctors" class="doctors section">
+<style>
+    .doctors-page {
+        padding: 80px 0;
+        background: #f4f7fe;
+    }
 
-    <div class="container section-title" data-aos="fade-up">
-        <h2>Featured Healthcare Professionals</h2>
-        <p>Meet some of our qualified doctors available for appointments</p>
-    </div>
+    /* صندوق البحث والفلترة */
+    .filter-wrapper {
+        background: #fff;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(13, 110, 253, 0.05);
+        margin-bottom: 50px;
+    }
 
+    /* كرت الطبيب */
+    .doctor-card {
+        background: #fff;
+        border-radius: 25px;
+        padding: 25px;
+        text-align: center;
+        transition: 0.4s;
+        border: 1px solid transparent;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .doctor-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 40px rgba(13, 110, 253, 0.1);
+            border-color: rgba(13, 110, 253, 0.2);
+        }
+
+        .doctor-card .doc-img-wrapper {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            padding: 8px;
+            background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
+        }
+
+            .doctor-card .doc-img-wrapper img {
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 4px solid #fff;
+            }
+
+    .doc-badge {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        background: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+        padding: 5px 15px;
+        border-radius: 50px;
+        margin-bottom: 15px;
+        display: inline-block;
+    }
+
+    .doc-name {
+        font-weight: 800;
+        color: #2d3436;
+        margin-bottom: 5px;
+    }
+
+    .doc-specialty {
+        color: #636e72;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    /* أزرار الأكشن داخل الكرت */
+    .doc-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .btn-view-profile {
+        background: #f8fbff;
+        color: #0d6efd;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: 0.3s;
+    }
+
+        .btn-view-profile:hover {
+            background: #0d6efd;
+            color: #fff;
+        }
+
+    .btn-book-sm {
+        background: #0d6efd;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        box-shadow: 0 5px 15px rgba(13, 110, 253, 0.2);
+    }
+</style>
+
+<section class="doctors-page">
     <div class="container">
 
-        <div class="row gy-4">
-
-            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-                <div class="team-member d-flex align-items-start">
-                    <div class="pic">
-                        <img src="~/assets/img/doctors/doctors-1.jpg" class="img-fluid" alt="">
-                    </div>
-                    <div class="member-info">
-                        <h4>Walter White</h4>
-                        <span>Chief Medical Officer</span>
-                        <p>Explicabo voluptatem mollitia et repellat qui dolorum quasi</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- باقي الدكاترة بنفس الكود بتاعك مع تعديل src إلى ~/assets/... -->
-
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-5 fw-bold">Our <span class="text-primary">Medical Experts</span></h2>
+            <p class="text-muted">High-qualified doctors ready to help you.</p>
         </div>
 
-    </div>
+        <div class="filter-wrapper" data-aos="fade-up">
+            <div class="row g-3">
+                <div class="col-md-7">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-search text-primary"></i></span>
+                        <input type="text" id="nameSearch" class="form-control border-start-0 ps-0" placeholder="Search by doctor name..." onkeyup="filterDoctors()">
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <select id="specialtyFilter" class="form-select" onchange="filterDoctors()">
+                        <option value="">All Specialties</option>
+                        @if (Model != null)
+                        {
+                            @foreach (var s in Model.Select(d => d.Specialty).Distinct())
+                            {
+                                <option value="@s">@s</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
 
+        <div class="row g-4" id="doctorsList">
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var doctor in Model)
+                {
+                    <div class="col-lg-4 col-md-6 doctor-item" data-name="@doctor.FullName.ToLower()" data-specialty="@doctor.Specialty">
+                        <div class="doctor-card" data-aos="zoom-in">
+                            <div class="doc-img-wrapper">
+                                <img src="@(string.IsNullOrEmpty(doctor.PhotoUrl) ? "/assets/img/doctors/doctors-1.jpg" : doctor.PhotoUrl)" alt="@doctor.FullName">
+                            </div>
+                            <span class="doc-badge">Professional</span>
+                            <h4 class="doc-name">@doctor.FullName</h4>
+                            <p class="doc-specialty"><i class="bi bi-patch-check-fill text-primary me-1"></i> @doctor.Specialty</p>
+
+                            <div class="doc-actions mt-4">
+                                <a asp-action="Details" asp-route-id="@doctor.Id" class="btn btn-view-profile">Profile</a>
+                                <a asp-controller="Appointment" asp-action="Book" asp-route-doctorId="@doctor.Id" class="btn btn-book-sm">Book Now</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center py-5">
+                    <div class="alert alert-light border shadow-sm">No doctors found matching your criteria.</div>
+                </div>
+            }
+        </div>
+    </div>
 </section>
+
+@section Scripts {
+    <script>
+        function filterDoctors() {
+            let nameInput = document.getElementById('nameSearch').value.toLowerCase();
+            let specialtyInput = document.getElementById('specialtyFilter').value;
+            let items = document.getElementsByClassName('doctor-item');
+
+            for (let item of items) {
+                let name = item.getAttribute('data-name');
+                let specialty = item.getAttribute('data-specialty');
+                let matchesName = name.includes(nameInput);
+                let matchesSpecialty = specialtyInput === "" || specialty === specialtyInput;
+
+                item.style.display = (matchesName && matchesSpecialty) ? "" : "none";
+            }
+        }
+    </script>
+}

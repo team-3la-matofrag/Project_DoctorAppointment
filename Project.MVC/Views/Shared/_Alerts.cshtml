@@ -1,15 +1,21 @@
 ﻿@if (TempData["Success"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show">
-        @TempData["Success"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="alert alert-success border-0 shadow-sm rounded-4 d-flex align-items-center animate__animated animate__backInDown" role="alert">
+        <i class="bi bi-check-circle-fill fs-4 me-3"></i>
+        <div>
+            <strong>Great!</strong> @TempData["Success"]
+        </div>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
     </div>
 }
 
 @if (TempData["Error"] != null)
 {
-    <div class="alert alert-danger alert-dismissible fade show">
-        @TempData["Error"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="alert alert-danger border-0 shadow-sm rounded-4 d-flex align-items-center animate__animated animate__shakeX" role="alert">
+        <i class="bi bi-exclamation-octagon-fill fs-4 me-3"></i>
+        <div>
+            <strong>Error!</strong> @TempData["Error"]
+        </div>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
     </div>
 }
