@@ -13,12 +13,11 @@ builder.Services.AddControllersWithViews();
 // Session
 builder.Services.AddSession();
 
-// Http
-builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
-
-// ApiService
-builder.Services.AddScoped<ApiService>();
+builder.Services.AddHttpClient<ApiService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7045");
+});
 
 var app = builder.Build();
 
