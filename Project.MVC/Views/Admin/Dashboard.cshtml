@@ -1,0 +1,123 @@
+﻿@using Project.DAL.Models
+@using Project.MVC.Models
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    var stats = ViewBag.Stats as AdminDashboard;
+    var appointments = ViewBag.RecentAppointments as List<AdminAppointmentViewModel>;
+}
+
+<div class="container mt-4">
+
+   
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Admin Dashboard</h2>
+        <span class="badge bg-dark p-2">
+            Logged in as Admin
+        </span>
+    </div>
+
+  
+
+    <div class="row g-3 mb-5">
+
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Doctors</h6>
+                    <h3 class="fw-bold">@stats?.DoctorsCount</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Patients</h6>
+                    <h3 class="fw-bold">@stats?.PatientsCount</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Appointments</h6>
+                    <h3 class="fw-bold">@stats?.AppointmentsCount</h3>
+                </div>
+            </div>
+        </div>
+
+        
+
+    </div>
+
+    <!-- Recent Appointments -->
+    <h4 class="fw-semibold mb-3">Recent Appointments</h4>
+
+    <div class="card shadow-sm mb-5">
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Patient</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (appointments != null && appointments.Any())
+                    {
+                        foreach (var item in appointments)
+                        {
+                            <tr>
+                                <td>@item.DoctorName</td>
+                                <td>@item.PatientName</td>
+                                <td>
+                                    @{
+                                        var status = (AppointmentStatus)item.Status;
+                                        var badgeClass = status switch
+                                        {
+                                            AppointmentStatus.Pending => "bg-warning text-dark",
+                                            AppointmentStatus.Confirmed => "bg-primary",
+                                            AppointmentStatus.Cancelled => "bg-danger",
+                                            AppointmentStatus.Completed => "bg-success",
+                                            _ => "bg-secondary"
+                                        };
+                                    }
+
+                                    <span class="badge @badgeClass">
+                                        @status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center text-muted p-3">
+                                No appointments found
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Quick Navigation -->
+    <h4 class="fw-semibold mb-3">Quick Actions</h4>
+
+    <div class="d-flex gap-3 flex-wrap">
+        <a href="/Admin/Users" class="btn btn-outline-primary">
+            Manage Users
+        </a>
+        <a href="/Admin/Doctors" class="btn btn-outline-success">
+            Manage Doctors
+        </a>
+        <a href="/Admin/Appointments" class="btn btn-outline-danger">
+            Manage Appointments
+        </a>
+    </div>
+
+</div>

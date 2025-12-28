@@ -1,0 +1,82 @@
+﻿@{
+    ViewData["Title"] = "User Management";
+}
+
+<div class="container mt-4">
+    <h2 class="fw-bold mb-4">User Management</h2>
+
+    <input type="text"
+           id="search"
+           class="form-control mb-3"
+           placeholder="Search users..." />
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        
+                    </tr>
+                </thead>
+                <tbody id="usersTable"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function loadUsers() {
+            const res = await fetch('/Admin/GetUsers');
+            const users = await res.json();
+
+            let rows = '';
+            users.forEach(u => {
+                rows += `
+                <tr>
+                    <td>${u.fullName}</td>
+                    <td>${u.email}</td>
+                    <td>
+                        <span class="badge bg-info">${u.role}</span>
+                    </td>
+                    <td>
+                        <span class="badge ${u.isActive ? 'bg-success' : 'bg-secondary'}">
+                            ${u.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                    </td>
+                    
+                </tr>`;
+            });
+
+            document.getElementById("usersTable").innerHTML = rows;
+        }
+
+              async function deleteUser(id) {
+            if (!confirm("Are you sure you want to delete this user?"))
+                return;
+
+            const res = await fetch(`/Admin/DeleteUser?id=${id}`, {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                loadUsers();
+            } else {
+                alert("Failed to delete user");
+            }
+        }
+
+        document.getElementById("search").addEventListener("keyup", function () {
+            const value = this.value.toLowerCase();
+            document.querySelectorAll("#usersTable tr").forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(value) ? "" : "none";
+            });
+        });
+
+        loadUsers();
+    </script>
+}

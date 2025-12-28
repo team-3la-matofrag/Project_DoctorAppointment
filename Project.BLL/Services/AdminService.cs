@@ -30,14 +30,16 @@ namespace Project.BLL.Services
         {
             var doctors = await _adminRepository.GetAllDoctorsAsync();
 
-            return doctors.Select(d => new AdminDoctorDto
-            {
-                Id = d.Id,
-                FullName = d.User.FullName,
-                IsActive = d.User.IsActive 
-            }).ToList();
+            return doctors
+                .Where(d => d.User != null)
+                .Select(d => new AdminDoctorDto
+                {
+                    Id = d.Id,
+                    FullName = d.User!.FullName,
+                    IsActive = d.User.IsActive
+                })
+                .ToList();
         }
-
         public async Task ActivateDoctorAsync(int doctorId)
         {
             await _adminRepository.ActivateDoctorAsync(doctorId);
@@ -61,9 +63,9 @@ namespace Project.BLL.Services
             return appointments.Select(a => new AdminAppointmentDto
             {
                 Id = a.Id,
-                DoctorName = a.Doctor.User.FullName,
-                PatientName = a.Patient.User.FullName,
-                Status = a.Status.ToString()
+                DoctorName = a.Doctor?.User?.FullName ?? "N/A",
+                PatientName = a.Patient?.User?.FullName ?? "N/A",
+                Status = a.Status
             }).ToList();
         }
 

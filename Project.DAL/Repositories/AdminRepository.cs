@@ -31,32 +31,41 @@ namespace Project.DAL.Repositories
             return await _context.Appointments.CountAsync();
         }
 
-        public async Task<List<Doctor>> GetAllDoctorsAsync()
-        {
-            return await _context.Doctors.ToListAsync();
-        }
+
 
         public async Task<List<Patient>> GetAllPatientsAsync()
         {
-            return await _context.Patients.ToListAsync();
+            return await _context.Patients
+                .Include(p => p.User)
+                .ToListAsync();
+        }
+        public async Task<List<Doctor>> GetAllDoctorsAsync()
+        {
+            return await _context.Doctors
+                .Include(d => d.User)
+                .ToListAsync();
         }
 
         public async Task<List<Appointment>> GetAllAppointmentsAsync()
         {
             return await _context.Appointments
                 .Include(a => a.Doctor)
+                    .ThenInclude(d => d.User)
                 .Include(a => a.Patient)
+                    .ThenInclude(p => p.User)
                 .ToListAsync();
         }
-
         public async Task ActivateDoctorAsync(int doctorId)
         {
-            var doctor = await _context.Doctors.FindAsync(doctorId);
-            if (doctor != null)
-            {
-                doctor.User.IsActive = true;
-                await _context.SaveChangesAsync();
-            }
+            var doctor = await _context.Doctors
+                .Include(d => d.User)
+                .FirstOrDefaultAsync(d => d.Id == doctorId);
+
+            if (doctor == null)
+                throw new Exception("Doctor not found");
+
+            doctor.User.IsActive = true;
+            await _context.SaveChangesAsync();
         }
 
         public async Task ForceCancelAppointmentAsync(int appointmentId)

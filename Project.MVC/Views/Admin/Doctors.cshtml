@@ -1,0 +1,71 @@
+﻿@{
+    ViewData["Title"] = "Doctor Management";
+}
+
+<div class="container mt-4">
+    <h2 class="fw-bold mb-4">Doctor Management</h2>
+
+    <input type="text"
+           id="searchDoctors"
+           class="form-control mb-3"
+           placeholder="Search doctors..." />
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="doctorsTable"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function loadDoctors() {
+            const res = await fetch('/Admin/GetDoctors');
+            const doctors = await res.json();
+
+            let rows = '';
+            doctors.forEach(d => {
+                rows += `
+                <tr>
+                    <td>${d.fullName}</td>
+                    <td>
+                        <span class="badge ${d.isActive ? 'bg-success' : 'bg-secondary'}">
+                            ${d.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-success"
+                                onclick="approveDoctor(${d.id})">
+                            Activate
+                        </button>
+                    </td>
+                </tr>`;
+            });
+
+            document.getElementById("doctorsTable").innerHTML = rows;
+        }
+
+        async function approveDoctor(id) {
+            await fetch(`/Admin/ApproveDoctor?id=${id}`, { method: 'POST' });
+            loadDoctors();
+        }
+
+        document.getElementById("searchDoctors").addEventListener("keyup", function () {
+            const value = this.value.toLowerCase();
+            document.querySelectorAll("#doctorsTable tr").forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(value) ? "" : "none";
+            });
+        });
+
+        loadDoctors();
+    </script>
+}

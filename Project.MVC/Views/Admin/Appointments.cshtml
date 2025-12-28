@@ -1,0 +1,107 @@
+﻿@{
+    ViewData["Title"] = "Appointments Management";
+}
+
+<div class="container mt-4">
+    <h2 class="fw-bold mb-4">Appointments</h2>
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <select id="status" class="form-select">
+                <option value="">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <input type="date" id="date" class="form-control" />
+        </div>
+
+        <div class="col-md-4">
+            <button class="btn btn-primary w-100" onclick="loadAppointments()">
+                Filter
+            </button>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Patient</th>
+                        <th>Status</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="appointmentsTable"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function loadAppointments() {
+            const status = document.getElementById('status').value;
+            const date = document.getElementById('date').value;
+
+            const res = await fetch(`/Admin/GetAppointments?status=${status}&date=${date}`);
+            const data = await res.json();
+
+            let rows = '';
+            data.forEach(a => {
+                rows += `
+                <tr>
+                    <td>${a.doctorName}</td>
+                    <td>${a.patientName}</td>
+                    <td>
+                      <span class="badge ${getStatusClass(a.status)}">
+                         ${getStatusText(a.status)}
+                            </span>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-danger"
+                                onclick="cancel(${a.id})">
+                            Cancel
+                        </button>
+                    </td>
+                </tr>`;
+            });
+
+            document.getElementById("appointmentsTable").innerHTML = rows;
+        }
+
+        async function cancel(id) {
+            if (!confirm("Cancel this appointment?")) return;
+            await fetch(`/Admin/CancelAppointment/${id}`, { method: 'POST' });
+            loadAppointments();
+        }
+
+        loadAppointments();
+    </script>
+    <script>
+        function getStatusText(status) {
+            switch (status) {
+                case 0: return "Pending";
+                case 1: return "Confirmed";
+                case 2: return "Cancelled";
+                case 3: return "Completed";
+                default: return "Unknown";
+            }
+        }
+
+        function getStatusClass(status) {
+            switch (status) {
+                case 0: return "bg-warning text-dark";
+                case 1: return "bg-primary";
+                case 2: return "bg-danger";
+                case 3: return "bg-success";
+                default: return "bg-secondary";
+            }
+        }
+    </script>
+}

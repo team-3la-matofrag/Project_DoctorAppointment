@@ -54,7 +54,8 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 // BLL
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
-
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 
 // Add services to the container.
 
