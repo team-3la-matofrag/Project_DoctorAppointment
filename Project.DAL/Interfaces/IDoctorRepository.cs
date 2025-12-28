@@ -10,6 +10,7 @@ namespace Project.DAL.Interfaces
     public interface IDoctorRepository
     {
         Task<List<Doctor>> GetAllAsync();
+        Task<Doctor?> GetByUserIdWithAppointmentsAsync(int userId);
         Task<Doctor?> GetByIdAsync(int id);
         Task AddAsync(Doctor doctor);
         Task SaveChangesAsync();

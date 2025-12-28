@@ -6,75 +6,167 @@
 
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-lg-7">
+        <div class="col-lg-8">
             <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5">
                 <div class="text-center mb-5">
                     <h2 class="fw-bold text-primary">Join Our Medical Community</h2>
                     <p class="text-muted">Fill in your details to get started with our healthcare services</p>
                 </div>
 
-                <form asp-action="Register" method="post">
+                <form asp-action="Register" method="post" id="registerForm">
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
+                    <!-- Account Type Selection -->
+                    <div class="mb-4 p-3 bg-light rounded-3">
+                        <div class="form-check form-switch">
+                            <input asp-for="IsDoctor" class="form-check-input" type="checkbox" id="isDoctorSwitch" style="width: 3rem; height: 1.5rem;">
+                            <label class="form-check-label fw-semibold ms-2" for="isDoctorSwitch">
+                                <i class="bi bi-hospital me-2 text-primary"></i>I am a healthcare provider (Doctor)
+                            </label>
+                        </div>
+                        <small class="text-muted ms-5 ps-3">Toggle this if you're registering as a doctor</small>
+                    </div>
+
+                    <!-- Common Fields -->
                     <div class="row g-3">
                         <div class="col-md-12">
-                            <label asp-for="FullName" class="form-label fw-semibold">Full Name</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-0"><i class="bi bi-person text-primary"></i></span>
-                                <input asp-for="FullName" class="form-control border-0 bg-light p-3" placeholder="e.g. John Doe" />
-                            </div>
+                            <label asp-for="FullName" class="form-label fw-semibold">
+                                <i class="bi bi-person-badge me-1"></i>Full Name *
+                            </label>
+                            <input asp-for="FullName" class="form-control border-0 bg-light p-3" placeholder="e.g. Dr. John Doe" />
                             <span asp-validation-for="FullName" class="text-danger small"></span>
                         </div>
 
                         <div class="col-md-6">
-                            <label asp-for="Email" class="form-label fw-semibold">Email</label>
+                            <label asp-for="Email" class="form-label fw-semibold">
+                                <i class="bi bi-envelope me-1"></i>Email *
+                            </label>
                             <input asp-for="Email" class="form-control border-0 bg-light p-3" placeholder="name@example.com" />
                             <span asp-validation-for="Email" class="text-danger small"></span>
                         </div>
 
                         <div class="col-md-6">
-                            <label asp-for="Phone" class="form-label fw-semibold">Phone Number</label>
-                            <input asp-for="Phone" class="form-control border-0 bg-light p-3" placeholder="+20 123..." />
+                            <label asp-for="Phone" class="form-label fw-semibold">
+                                <i class="bi bi-telephone me-1"></i>Phone Number *
+                            </label>
+                            <input asp-for="Phone" class="form-control border-0 bg-light p-3" placeholder="+20 123 456 7890" />
                             <span asp-validation-for="Phone" class="text-danger small"></span>
                         </div>
 
                         <div class="col-md-6">
-                            <label asp-for="DOB" class="form-label fw-semibold">Date of Birth</label>
-                            <input asp-for="DOB" type="date" class="form-control border-0 bg-light p-3" />
+                            <label asp-for="DOB" class="form-label fw-semibold">
+                                <i class="bi bi-calendar-event me-1"></i>Date of Birth *
+                            </label>
+                            <input asp-for="DOB" type="date" class="form-control border-0 bg-light p-3"
+                                   max="@DateTime.Today.AddYears(-18).ToString("yyyy-MM-dd")" />
                             <span asp-validation-for="DOB" class="text-danger small"></span>
                         </div>
 
                         <div class="col-md-6">
-                            <label asp-for="Gender" class="form-label fw-semibold">Gender</label>
+                            <label asp-for="Gender" class="form-label fw-semibold">
+                                <i class="bi bi-gender-ambiguous me-1"></i>Gender *
+                            </label>
                             <select asp-for="Gender" class="form-select border-0 bg-light p-3">
                                 <option value="">Select Gender</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
+                                <option value="Other">Other</option>
                             </select>
                             <span asp-validation-for="Gender" class="text-danger small"></span>
                         </div>
 
                         <div class="col-md-6">
-                            <label asp-for="Password" class="form-label fw-semibold">Password</label>
-                            <input asp-for="Password" type="password" class="form-control border-0 bg-light p-3" placeholder="At least 6 characters" />
+                            <label asp-for="Password" class="form-label fw-semibold">
+                                <i class="bi bi-lock me-1"></i>Password *
+                            </label>
+                            <input asp-for="Password" type="password" class="form-control border-0 bg-light p-3"
+                                   placeholder="At least 6 characters" />
                             <span asp-validation-for="Password" class="text-danger small"></span>
                         </div>
 
                         <div class="col-md-6">
-                            <label asp-for="ConfirmPassword" class="form-label fw-semibold">Confirm Password</label>
+                            <label asp-for="ConfirmPassword" class="form-label fw-semibold">
+                                <i class="bi bi-lock-fill me-1"></i>Confirm Password *
+                            </label>
                             <input asp-for="ConfirmPassword" type="password" class="form-control border-0 bg-light p-3" />
                             <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
                         </div>
                     </div>
 
+                    <!-- Doctor-Specific Fields (Hidden by default) -->
+                    <div id="doctorFields" style="display: none;">
+                        <hr class="my-4">
+                        <h5 class="text-primary mb-4">
+                            <i class="bi bi-briefcase-fill me-2"></i>Professional Information
+                        </h5>
+
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label asp-for="Specialization" class="form-label fw-semibold">
+                                    <i class="bi bi-heart-pulse me-1"></i>Specialization *
+                                </label>
+                                <input asp-for="Specialization" class="form-control border-0 bg-light p-3"
+                                       placeholder="e.g. Cardiology, Neurology, Pediatrics"
+                                       id="specializationInput" />
+                                <span asp-validation-for="Specialization" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="ClinicAddress" class="form-label fw-semibold">
+                                    <i class="bi bi-geo-alt me-1"></i>Clinic Address *
+                                </label>
+                                <textarea asp-for="ClinicAddress" class="form-control border-0 bg-light p-3" rows="2"
+                                          placeholder="Full clinic address"
+                                          id="clinicAddressInput"></textarea>
+                                <span asp-validation-for="ClinicAddress" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="WorkStart" class="form-label fw-semibold">
+                                    <i class="bi bi-clock me-1"></i>Working Hours Start *
+                                </label>
+                                <input asp-for="WorkStart" type="time" class="form-control border-0 bg-light p-3"
+                                       value="09:00"
+                                       id="workStartInput" />
+                                <span asp-validation-for="WorkStart" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="WorkEnd" class="form-label fw-semibold">
+                                    <i class="bi bi-clock-fill me-1"></i>Working Hours End *
+                                </label>
+                                <input asp-for="WorkEnd" type="time" class="form-control border-0 bg-light p-3"
+                                       value="17:00"
+                                       id="workEndInput" />
+                                <span asp-validation-for="WorkEnd" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="DoctorNotes" class="form-label fw-semibold">
+                                    <i class="bi bi-file-text me-1"></i>Bio / Additional Notes
+                                </label>
+                                <textarea asp-for="DoctorNotes" class="form-control border-0 bg-light p-3" rows="3"
+                                          placeholder="Brief professional bio, certifications, experience..."
+                                          maxlength="500"></textarea>
+                                <span asp-validation-for="DoctorNotes" class="text-danger small"></span>
+                                <small class="text-muted">Optional - Max 500 characters</small>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="d-grid mt-5">
                         <button type="submit" class="btn btn-primary btn-lg rounded-pill py-3 fw-bold shadow">
-                            Create Free Account
+                            <i class="bi bi-check-circle me-2"></i>Create Free Account
                         </button>
                     </div>
 
                     <div class="text-center mt-4">
-                        <p class="text-muted">Already a member? <a asp-action="Login" class="text-primary fw-bold text-decoration-none">Log in here</a></p>
+                        <p class="text-muted">
+                            Already a member?
+                            <a asp-action="Login" class="text-primary fw-bold text-decoration-none">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Log in here
+                            </a>
+                        </p>
                     </div>
                 </form>
             </div>
@@ -84,4 +176,102 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function() {
+            // Toggle doctor fields based on checkbox
+            $('#isDoctorSwitch').change(function() {
+                const isChecked = $(this).is(':checked');
+
+                if (isChecked) {
+                    $('#doctorFields').slideDown(300);
+                    // Make doctor fields required
+                    $('#specializationInput, #clinicAddressInput, #workStartInput, #workEndInput')
+                        .prop('required', true);
+                } else {
+                    $('#doctorFields').slideUp(300);
+                    // Remove required attribute
+                    $('#specializationInput, #clinicAddressInput, #workStartInput, #workEndInput')
+                        .prop('required', false);
+                }
+            });
+
+            // Initialize on page load if IsDoctor is already checked (e.g., validation failed)
+            if ($('#isDoctorSwitch').is(':checked')) {
+                $('#doctorFields').show();
+                $('#specializationInput, #clinicAddressInput, #workStartInput, #workEndInput')
+                    .prop('required', true);
+            }
+
+            // Form validation enhancement
+            $('#registerForm').submit(function(e) {
+                const isDoctor = $('#isDoctorSwitch').is(':checked');
+
+                if (isDoctor) {
+                    let hasErrors = false;
+
+                    if (!$('#specializationInput').val()) {
+                        alert('Please enter your specialization');
+                        hasErrors = true;
+                    }
+
+                    if (!$('#clinicAddressInput').val()) {
+                        alert('Please enter your clinic address');
+                        hasErrors = true;
+                    }
+
+                    if (!$('#workStartInput').val() || !$('#workEndInput').val()) {
+                        alert('Please select your working hours');
+                        hasErrors = true;
+                    }
+
+                    if (hasErrors) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .form-control:focus, .form-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        }
+
+        .form-check-input:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+        .card {
+            transition: transform 0.3s ease;
+        }
+
+        #doctorFields {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn-primary {
+            transition: all 0.3s ease;
+        }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px rgba(13, 110, 253, 0.3);
+            }
+    </style>
 }

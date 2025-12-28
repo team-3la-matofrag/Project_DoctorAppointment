@@ -225,5 +225,64 @@ namespace Project.MVC.Controllers
                 return RedirectToAction("Appointments", "Patient");
             }
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Confirm(int id)
+        {
+            if (!IsAuthenticated())
+            {
+                TempData["Error"] = "Please log in to confirm appointments.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            try
+            {
+                await _api.PostAsync($"/api/appointments/{id}/confirm", new { });
+                
+                TempData["Success"] = "Appointment confirmed successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Failed to confirm appointment: " + ex.Message;
+            }
+
+            // Redirect based on user role
+            if (CurrentUser?.Role == "Doctor")
+                return RedirectToAction("Appointments", "Doctor");
+            else
+                return RedirectToAction("Appointments", "Patient");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Complete(int id)
+        {
+            if (!IsAuthenticated())
+            {
+                TempData["Error"] = "Please log in to complete appointments.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Only doctors can complete appointments
+            if (CurrentUser?.Role != "Doctor")
+            {
+                TempData["Error"] = "Only doctors can mark appointments as completed.";
+                return RedirectToAction("Dashboard", "Patient");
+            }
+
+            try
+            {
+                await _api.PutAsync($"/api/appointments/{id}/complete", new { });
+                
+                TempData["Success"] = "Appointment marked as completed!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Failed to complete appointment: " + ex.Message;
+            }
+
+            return RedirectToAction("Appointments", "Doctor");
+        }
     }
 }

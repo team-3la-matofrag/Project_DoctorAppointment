@@ -43,9 +43,14 @@ namespace Project.MVC.Controllers
 
                 _api.SetCurrentUser(response);
 
-                TempData["Success"] = $"Welcome {response.FullName}";
-                _api.SetCurrentUser(response);
-                return RedirectToAction("Index", "Home");
+                TempData["Success"] = $"Welcome back, {response.FullName}";
+                //role based redirection
+                return response.Role switch
+                {
+                    "Doctor" => RedirectToAction("Dashboard", "Doctor"),
+                    "Patient" => RedirectToAction("Dashboard", "Patient"),
+                    _ => RedirectToAction("Index", "Home"),
+                };
             }
             catch
             {
@@ -68,6 +73,24 @@ namespace Project.MVC.Controllers
         {
             if (!ModelState.IsValid)
                 return View(model);
+            if (model.IsDoctor)
+            {
+                if (string.IsNullOrWhiteSpace(model.Specialization))
+                {
+                    ModelState.AddModelError("Specializatio", "Specialization is required ");
+                    return View(model);
+                }
+                if (string.IsNullOrWhiteSpace(model.ClinicAddress))
+                {
+                    ModelState.AddModelError("ClinicAddress", "Clinic Address is required ");
+                    return View(model);
+                }
+                if (!model.WorkEnd.HasValue || !model.WorkStart.HasValue)
+                {
+                    ModelState.AddModelError("Hours", "Working Hours are required ");
+                    return View(model);
+                }
+            }
 
             try
             {
@@ -77,7 +100,13 @@ namespace Project.MVC.Controllers
                 _api.SetCurrentUser(user);
 
                 TempData["Success"] = "Account created successfully";
-                return RedirectToAction("Index", "Home");
+                if (user.Role == "Doctor")
+                    return RedirectToAction("Dashboard", "Doctor");
+                if (user.Role == "Patient")
+                    return RedirectToAction("Dashboard", "Patient");
+                else 
+                    return RedirectToAction("Index", "Home");
+
             }
             catch (Exception ex)
             {

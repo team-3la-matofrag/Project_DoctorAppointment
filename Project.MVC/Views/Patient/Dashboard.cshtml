@@ -111,15 +111,15 @@
                             <div class="d-flex gap-2">
                                 @if (appointment.Status?.ToLower() == "pending")
                                 {
-                                    <button class="btn btn-@colorClass btn-sm flex-grow-1" onclick="confirmAppointment(@appointment.Id)">
-                                        <i class="bi bi-check-circle me-1"></i>Confirm
-                                    </button>
+                                    //<button class="btn btn-@colorClass btn-sm flex-grow-1" onclick="confirmAppointment(@appointment.Id)">
+                                     //   <i class="bi bi-check-circle me-1 flex-grow-1"></i>Confirm
+                                    //</button>
                                 }
                                 else
                                 {
                                     <span class="badge bg-@appointment.StatusColor flex-grow-1 py-2">@appointment.Status</span>
                                 }
-                                <button class="btn btn-outline-danger btn-sm"
+                                <button class="btn btn-outline-danger btn-sm flex-grow-1"
                                         onclick="if(confirm('Are you sure you want to cancel your appointment with @appointment.DoctorName?')) { document.getElementById('cancelForm-@appointment.Id').submit(); }">
                                     <i class="bi bi-x-circle"></i>
                                         <form id="cancelForm-@appointment.Id" 
