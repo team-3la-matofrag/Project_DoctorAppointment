@@ -48,4 +48,47 @@ public class DoctorsController : ControllerBase
         await _service.ToggleStatusAsync(id);
         return Ok();
     }
+    [HttpGet("dashboard/{userId}")]
+    public async Task<IActionResult> GetDashboard(int userId)
+    {
+
+        try
+        {
+            var dashboard = await _service.GetDashboardDataAsync(userId);
+            return Ok(dashboard);
+        }
+        catch(Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+    [HttpGet("profile/{userId}")]
+    public async Task<IActionResult> GetProfile(int userId)
+    {
+
+        try
+        {
+            var profile = await _service.GetProfileAsync(userId);
+            if (profile == null) { return NotFound(new { message = "Doctor Profile not found " }); }
+            return Ok(profile);
+        }
+        catch(Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+    [HttpGet("{doctorId}/appointments")]
+    public async Task<IActionResult> GetDoctorAppointments(int doctorId, [FromQuery] string? status = null, [FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
+    {
+        try
+        {
+            var appointments = await _service.GetDoctorAppointmentsAsync(doctorId, status, startDate, endDate);
+            return Ok(appointments);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
 }

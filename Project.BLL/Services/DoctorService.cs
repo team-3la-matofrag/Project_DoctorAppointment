@@ -100,5 +100,130 @@ namespace Project.BLL.Services
             doctor.User.IsActive = !doctor.User.IsActive;
             await _repo.SaveChangesAsync();
         }
+        public async Task<object> GetDashboardDataAsync(int userId)
+        {
+            var doctor =  await _repo.GetByUserIdWithAppointmentsAsync(userId);
+            if (doctor == null) throw new Exception("Doctor Profile Not found");
+
+            var now = DateTime.UtcNow;
+            var today = DateTime.Today;
+            var todayEnd = today.AddDays(1);
+
+            var allAppointments = doctor.Appointments?.ToList() ?? new List<Appointment>();
+            var todayAppointments = allAppointments
+                .Where(a => a.StartAt >= today && a.EndAt < todayEnd)
+                .OrderBy(a => a.StartAt)
+                .ToList();
+            var todayTotal = todayAppointments.Count;
+            var todayPending = todayAppointments.Count(a => a.Status == AppointmentStatus.Pending);
+            var todayConfirmed = todayAppointments.Count(a => a.Status == AppointmentStatus.Confirmed);
+
+            var uniquePatients = allAppointments
+                .Where(a => a.Status == AppointmentStatus.Completed)
+                .Select(a => a.PatientId)
+                .Distinct()
+                .Count();
+            var upcomingAppointments = allAppointments
+                .Count(a => a.StartAt >= now && a.Status != AppointmentStatus.Cancelled);
+            return new
+            {
+                Profile = new
+                {
+                    Id = doctor.Id,
+                    FullName = doctor.User?.FullName ?? "",
+                    Email = doctor.User?.Email ?? "",
+                    Specialization = doctor.Specialization?.Name ?? "General",
+                    ClinicAddress = doctor.ClinicAddress ?? "",
+                    WorkingHours = $"{doctor.WorkStart:hh\\:mm} - {doctor.WorkEnd:hh\\:mm}"
+                },
+                Stats = new
+                {
+                    TodayTotal = todayTotal,
+                    TodayPending = todayPending,
+                    TodayConfirmed = todayConfirmed,
+                    TotalPatients = uniquePatients,
+                    UpcomingAppointments = upcomingAppointments
+                },
+                TodayAppointments = todayAppointments.Select(a => new
+                {
+                    a.Id,
+                    a.StartAt,
+                    a.EndAt,
+                    Status = a.Status.ToString(),
+                    a.Notes,
+                    PatientName = a.Patient?.User?.FullName ?? "Unknown",
+                    PatientPhone = a.Patient?.User?.Phone ?? ""
+                }).ToList()
+            };
+        }
+        public async Task<object> GetProfileAsync(int userId)
+        {
+            var doctors = await _repo.GetAllAsync();
+            var doctor = doctors.FirstOrDefault(d => d.UserId == userId);
+
+            if (doctor == null) return null;
+
+            return new
+            {
+                Id = doctor.Id,
+                UserId = doctor.UserId,
+                FullName = doctor.User?.FullName ?? "",
+                Email = doctor.User?.Email ?? "",
+                Phone = doctor.User?.Phone ?? "",
+                Specialization = doctor.Specialization?.Name ?? "",
+                ClinicAddress = doctor.ClinicAddress ?? " ",
+                WorkStart = doctor.WorkStart,
+                WorkEnd = doctor.WorkEnd,
+                Bio = doctor.Bio ?? ""
+            };
+        }
+        public async Task<List<object>> GetDoctorAppointmentsAsync(int doctorId, string? status = null, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            var doctor = await _repo.GetByIdAsync(doctorId);
+            if (doctor == null)
+                throw new Exception("Doctor not found");
+
+            var appointments = doctor.Appointments?.ToList() ?? new List<Appointment>();
+
+            // Apply filters
+            if (!string.IsNullOrEmpty(status))
+            {
+                if (Enum.TryParse<AppointmentStatus>(status, true, out var statusEnum))
+                {
+                    appointments = appointments.Where(a => a.Status == statusEnum).ToList();
+                }
+            }
+
+            if (startDate.HasValue)
+            {
+                appointments = appointments.Where(a => a.StartAt.Date >= startDate.Value.Date).ToList();
+            }
+
+            if (endDate.HasValue)
+            {
+                appointments = appointments.Where(a => a.StartAt.Date <= endDate.Value.Date).ToList();
+            }
+
+            return appointments
+                .OrderByDescending(a => a.StartAt)
+                .Select(a => new
+                {
+                    a.Id,
+                    a.StartAt,
+                    a.EndAt,
+                    Status = a.Status.ToString(),
+                    a.Notes,
+                    PatientName = a.Patient?.User?.FullName ?? "Unknown",
+                    PatientPhone = a.Patient?.User?.Phone ?? "",
+                    PatientEmail = a.Patient?.User?.Email ?? "",
+                    PatientGender = a.Patient?.Gender ?? "",
+                    PatientAge = a.Patient?.DOB != null
+                        ? DateTime.Today.Year - a.Patient.DOB.Year
+                        : 0
+                })
+                .Cast<object>()
+                .ToList();
+
+        }
     }
 }

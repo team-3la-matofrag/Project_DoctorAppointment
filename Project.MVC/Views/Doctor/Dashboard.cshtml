@@ -1,0 +1,268 @@
+﻿@model Project.MVC.Models.DoctorDashboardViewModel
+@{
+    ViewData["Title"] = "Doctor Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container mt-5">
+    <!-- Welcome Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-body text-white p-4">
+                    <h3 class="mb-2">
+                        <i class="bi bi-heart-pulse-fill me-2"></i>
+                        Welcome back, Dr. @(Model?.Profile?.FullName ?? "Doctor")!
+                    </h3>
+                    <p class="mb-1"><i class="bi bi-hospital me-2"></i>@(Model?.Profile?.Specialization ?? "General Practice")</p>
+                    <p class="mb-0"><i class="bi bi-geo-alt me-2"></i>@(Model?.Profile?.ClinicAddress ?? "Clinic")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                         style="width: 70px; height: 70px;">
+                        <i class="bi bi-calendar-check text-primary" style="font-size: 2rem;"></i>
+                    </div>
+                    <h3 class="fw-bold text-primary mb-1">@(Model?.Stats?.TodayTotal ?? 0)</h3>
+                    <p class="text-muted mb-0">Today's Appointments</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                         style="width: 70px; height: 70px;">
+                        <i class="bi bi-hourglass-split text-warning" style="font-size: 2rem;"></i>
+                    </div>
+                    <h3 class="fw-bold text-warning mb-1">@(Model?.Stats?.TodayPending ?? 0)</h3>
+                    <p class="text-muted mb-0">Pending Confirmations</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                         style="width: 70px; height: 70px;">
+                        <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
+                    </div>
+                    <h3 class="fw-bold text-success mb-1">@(Model?.Stats?.TodayConfirmed ?? 0)</h3>
+                    <p class="text-muted mb-0">Confirmed Today</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Appointments -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-white">
+                        <i class="bi bi-calendar3 me-2"></i>Today's Schedule
+                    </h5>
+                    <span class="badge bg-white text-primary">@DateTime.Today.ToString("MMM dd, yyyy")</span>
+                </div>
+                <div class="card-body">
+                    @if (Model?.TodayAppointments?.Any() == true)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Patient</th>
+                                        <th>Contact</th>
+                                        <th>Duration</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var appointment in Model.TodayAppointments)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@appointment.FormattedTime</strong>
+                                            </td>
+                                            <td>
+                                                <i class="bi bi-person-circle me-2"></i>
+                                                @appointment.PatientName
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-telephone me-1"></i>
+                                                    @(appointment.PatientPhone ?? "N/A")
+                                                </small>
+                                            </td>
+                                            <td>@appointment.FormattedDuration</td>
+                                            <td>
+                                                <span class="badge bg-@appointment.StatusColor">
+                                                    <i class="@appointment.StatusIcon me-1"></i>
+                                                    @appointment.Status
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    @if (appointment.CanConfirm)
+                                                    {
+                                                        <button class="btn btn-outline-success" onclick="confirmAppointment(@appointment.Id)">
+                                                            <i class="bi bi-check-circle"></i>
+                                                        </button>
+                                                    }
+                                                    @if (appointment.CanComplete)
+                                                    {
+                                                        <button class="btn btn-outline-info" onclick="completeAppointment(@appointment.Id)">
+                                                            <i class="bi bi-check-all"></i>
+                                                        </button>
+                                                    }
+                                                    @if (appointment.CanCancel)
+                                                    {
+                                                        <button class="btn btn-outline-danger" onclick="cancelAppointment(@appointment.Id)">
+                                                            <i class="bi bi-x-circle"></i>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-calendar-x display-1 text-muted"></i>
+                            <h5 class="mt-3">No Appointments Today</h5>
+                            <p class="text-muted">Your schedule is clear for today. Enjoy your day!</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-info bg-opacity-10 rounded-circle p-3 me-3">
+                            <i class="bi bi-calendar-week text-info" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-1">View Schedule</h5>
+                            <p class="card-text text-muted small mb-0">Check your upcoming appointments</p>
+                        </div>
+                    </div>
+                    <a asp-action="appointments" class="btn btn-info w-100">
+                        <i class="bi bi-calendar-range me-2"></i>View Full Schedule
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-success bg-opacity-10 rounded-circle p-3 me-3">
+                            <i class="bi bi-person-badge text-success" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-1">My Profile</h5>
+                            <p class="card-text text-muted small mb-0">Update your professional information</p>
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-success w-100">
+                        <i class="bi bi-pencil-square me-2"></i>Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmAppointment(appointmentId) {
+            if (confirm('Confirm this appointment?')) {
+                fetch(`/Appointment/Confirm/${appointmentId}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Appointment confirmed!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => alert('Error confirming appointment'));
+            }
+        }
+
+        function completeAppointment(appointmentId) {
+            if (confirm('Mark this appointment as completed?')) {
+                fetch(`/Appointment/Complete/${appointmentId}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Appointment marked as completed!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => alert('Error completing appointment'));
+            }
+        }
+
+        function cancelAppointment(appointmentId) {
+            if (confirm('Cancel this appointment?')) {
+                fetch(`/Appointment/Cancel/${appointmentId}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Appointment cancelled');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => alert('Error cancelling appointment'));
+            }
+        }
+    </script>
+}
+
+<style>
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .bg-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+</style>

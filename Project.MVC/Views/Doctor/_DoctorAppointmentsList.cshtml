@@ -1,0 +1,164 @@
+﻿@model List<Project.MVC.Models.DoctorAppointmentViewModel>
+
+@if (Model != null && Model.Any())
+{
+    <div class="row g-4">
+        @foreach (var appointment in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm h-100 appointment-card">
+                    <!-- Status Badge -->
+                    <div class="position-absolute top-0 end-0 m-3">
+                        <span class="badge bg-@appointment.StatusColor">
+                            <i class="@appointment.StatusIcon me-1"></i>
+                            @appointment.Status
+                        </span>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Patient Info -->
+                        <div class="d-flex align-items-start mb-3 pt-2">
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                <i class="bi bi-person-fill text-primary" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="card-title mb-1 fw-bold">@appointment.PatientName</h5>
+                                @if (!string.IsNullOrEmpty(appointment.PatientEmail))
+                                {
+                                    <p class="text-muted small mb-0">
+                                        <i class="bi bi-envelope me-1"></i>@appointment.PatientEmail
+                                    </p>
+                                }
+                            </div>
+                        </div>
+
+                        <hr class="my-3">
+
+                        <!-- Appointment Details -->
+                        <div class="appointment-details">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-calendar-event text-primary me-2"></i>
+                                <span class="small">
+                                    @if (!string.IsNullOrEmpty(appointment.RelativeDate) && appointment.RelativeDate != appointment.FormattedDate)
+                                    {
+                                        <strong>@appointment.RelativeDate</strong>
+                            
+                                        <text> - </text>
+                                    }
+                                    @appointment.FormattedDate
+                                </span>
+                            </div>
+
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-clock text-primary me-2"></i>
+                                <span class="small">@appointment.FormattedTime (@appointment.FormattedDuration)</span>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(appointment.PatientPhone))
+                            {
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="bi bi-telephone text-primary me-2"></i>
+                                    <span class="small">@appointment.PatientPhone</span>
+                                </div>
+                            }
+
+                            @if (appointment.PatientAge > 0)
+                            {
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="bi bi-person-badge text-primary me-2"></i>
+                                    <span class="small">
+                                        @appointment.PatientAge years old
+                                        @if (!string.IsNullOrEmpty(appointment.PatientGender))
+                                        {
+                                            <text> - @appointment.PatientGender</text>
+                                        }
+                                    </span>
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(appointment.Notes))
+                            {
+                                <div class="alert alert-light mt-3 mb-0 p-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-sticky me-1"></i>
+                                        <strong>Notes:</strong> @appointment.Notes
+                                    </small>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2 mt-3">
+                            @if (appointment.CanConfirm)
+                            {
+                                <form asp-controller="Appointment" asp-action="Confirm" asp-route-id="@appointment.Id"
+                                      method="post" class="flex-grow-1"
+                                      onsubmit="return confirm('Confirm this appointment with @appointment.PatientName?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-success btn-sm w-100">
+                                        <i class="bi bi-check-circle me-1"></i>Confirm
+                                    </button>
+                                </form>
+                            }
+
+                            @if (appointment.CanComplete)
+                            {
+                                <form asp-controller="Appointment" asp-action="Complete" asp-route-id="@appointment.Id"
+                                      method="post" class="flex-grow-1"
+                                      onsubmit="return confirm('Mark appointment with @appointment.PatientName as completed?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-info btn-sm w-100">
+                                        <i class="bi bi-check-all me-1"></i>Complete
+                                    </button>
+                                </form>
+                            }
+
+                            @if (appointment.CanCancel)
+                            {
+                                <form asp-controller="Appointment" asp-action="Cancel" asp-route-id="@appointment.Id"
+                                      method="post" class="flex-grow-1"
+                                      onsubmit="return confirm('Cancel appointment with @appointment.PatientName?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                        <i class="bi bi-x-circle me-1"></i>Cancel
+                                    </button>
+                                </form>
+                            }
+
+                            <!-- Details Button (for modal - we'll add this next) -->
+                            <button class="btn btn-outline-primary btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#appointmentModal"
+                                    onclick="loadAppointmentDetails(@appointment.Id)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-calendar-x display-1 text-muted"></i>
+        <h5 class="mt-3">No Appointments Found</h5>
+        <p class="text-muted">There are no appointments matching your criteria.</p>
+    </div>
+}
+
+<style>
+    .appointment-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .appointment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2) !important;
+        }
+
+    .appointment-details i {
+        width: 20px;
+    }
+</style>

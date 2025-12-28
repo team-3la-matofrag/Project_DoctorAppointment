@@ -100,7 +100,7 @@ namespace Project.BLL.Services
                 Status = a.Status.ToString(),
                 a.Notes,
                 DoctorName = a.Doctor?.User?.FullName ?? "Unknown",
-                IsUpcoming = a.StartAt >= now
+                IsUpcoming = a.StartAt >= now && a.Status != AppointmentStatus.Cancelled
 
 
             }

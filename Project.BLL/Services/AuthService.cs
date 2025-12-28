@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Project.BLL.DTOs;
 using Project.BLL.Interfaces;
 using Project.DAL.Interfaces;
+using Project.DAL.Repositories;
 using Project.DAL.Models;
 
 namespace Project.BLL.Services
@@ -10,13 +11,17 @@ namespace Project.BLL.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IPatientRepository _patientRepository;
+        private readonly IDoctorRepository _doctorRepository;
+        private readonly SpecializationRepository _specializationRepository;
         private readonly PasswordHasher<User> _passwordHasher;
 
-        public AuthService(IUserRepository userRepository, IPatientRepository patientRepository)
+        public AuthService(IUserRepository userRepository, IPatientRepository patientRepository, SpecializationRepository specializationRepository, IDoctorRepository doctorRepository)
         {
             _userRepository = userRepository;
-            _passwordHasher = new PasswordHasher<User>();
             _patientRepository = patientRepository;
+            _doctorRepository = doctorRepository;
+            _specializationRepository = specializationRepository;
+            _passwordHasher = new PasswordHasher<User>();
         }
 
         public async Task<object> LoginAsync(LoginDto dto)
@@ -90,8 +95,40 @@ namespace Project.BLL.Services
                 };
                 await _patientRepository.AddAsync(patient);
                 await _patientRepository.SaveChangesAsync();
-            }
+            }else if(user.Role == "Doctor")
+            {
+                int? specializationId = null;
+                if (!string.IsNullOrWhiteSpace(dto.Specialization))
+                {
+                    var specializations = _specializationRepository.GetAll();
+                    var specialization = specializations
+                        .FirstOrDefault(s => s.Name.Equals(dto.Specialization, StringComparison.OrdinalIgnoreCase));
 
+                    if (specialization == null)
+                    {
+                        specialization = new Specialization { Name = dto.Specialization };
+                        _specializationRepository.Add(specialization);
+                        specializations = _specializationRepository.GetAll(); // Refresh
+                        specialization = specializations.First(s => s.Name == dto.Specialization);
+                    }
+
+                    specializationId = specialization.Id;
+                }
+
+                var doctor = new Doctor
+                {
+                    UserId = user.Id,
+                    SpecializationId = specializationId,
+                    Bio = dto.DoctorNotes ?? string.Empty,
+                    ClinicAddress = dto.ClinicAddress ?? string.Empty,
+                    WorkStart = dto.WorkStart ?? new TimeSpan(9, 0, 0), // Default 9 AM
+                    WorkEnd = dto.WorkEnd ?? new TimeSpan(17, 0, 0) // Default 5 PM
+                };
+
+                await _doctorRepository.AddAsync(doctor);
+                await _doctorRepository.SaveChangesAsync();
+            }
+        
             return new
             {
                 user.Id,

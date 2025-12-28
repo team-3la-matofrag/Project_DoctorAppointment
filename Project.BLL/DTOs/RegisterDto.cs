@@ -19,5 +19,11 @@ namespace Project.BLL.DTOs
         public string Role { get; set; } = "Patient";
         public DateTime DateOfBirth { get; set; }
         public string Gender { get; set; }
+        // Doctor specific fields 
+        public string? Specialization { get; set; }
+        public string? ClinicAddress { get; set; }
+        public TimeSpan? WorkStart { get; set; }
+        public TimeSpan? WorkEnd { get; set; }
+        public string? DoctorNotes { get; set; }
     }
 }

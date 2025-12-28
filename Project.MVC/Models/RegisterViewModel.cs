@@ -28,5 +28,16 @@ namespace Project.MVC.Models
 
         [Required(ErrorMessage = "Gender is required")]
         public string Gender { get; set; }
+        
+        public bool IsDoctor { get; set; }
+        public string Role => IsDoctor ? "Doctor" : "Patient";
+        public string? Specialization { get; set; }
+        public string? ClinicAddress { get; set; }
+        [DataType(DataType.Time)]
+        public TimeSpan? WorkStart { get; set; }
+
+        [DataType(DataType.Time)]
+        public TimeSpan? WorkEnd { get; set; }
+        public string? DoctorNotes { get; set; }
     }
 }
