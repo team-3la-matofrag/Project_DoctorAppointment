@@ -44,11 +44,18 @@ namespace Project.API.Controllers
             return Ok(new { message = "Appointment confirmed successfully" });
         }
 
-        [HttpPut("appointments/{id}/complete")]
+        [HttpPut("{id}/complete")]
         public async Task<IActionResult> Complete(int id)
         {
-            await _service.CompleteAsync(id);
-            return Ok();
+            try
+            {
+                await _service.CompleteAsync(id);
+                return Ok(new { message = "appointment Completed Successfully" });
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new { message= ex.Message });
+            }
         }
 
 

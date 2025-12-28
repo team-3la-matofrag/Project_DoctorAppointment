@@ -19,12 +19,25 @@ public class DoctorRepository : IDoctorRepository
             .Include(d => d.Specialization)
             .ToListAsync();
     }
+    public async Task<Doctor?> GetByUserIdWithAppointmentsAsync(int userId)
+    {
+        return await _context.Doctors
+            .Include(d => d.User)
+            .Include(d => d.Specialization)
+            .Include(d => d.Appointments)
+                .ThenInclude(a => a.Patient)
+                    .ThenInclude(p => p.User)
+            .FirstOrDefaultAsync(d => d.UserId == userId);
+    }
 
     public async Task<Doctor?> GetByIdAsync(int id)
     {
         return await _context.Doctors
             .Include(d => d.User)
             .Include(d => d.Specialization)
+            .Include(d => d.Appointments)
+                .ThenInclude(a => a.Patient)
+                    .ThenInclude(p => p.User)
             .FirstOrDefaultAsync(d => d.Id == id);
     }
 

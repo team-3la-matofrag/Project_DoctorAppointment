@@ -1,0 +1,197 @@
+﻿@model List<Project.MVC.Models.DoctorAppointmentViewModel>
+@{
+    ViewData["Title"] = "My Schedule";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="mb-2">
+                <i class="bi bi-calendar-week text-primary me-2"></i>My Appointment Schedule
+            </h2>
+            <p class="text-muted">Manage and review your patient appointments</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="Dashboard" class="btn btn-outline-primary">
+                <i class="bi bi-grid-1x2 me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Filters -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">
+                        <i class="bi bi-calendar-range me-1"></i>Start Date
+                    </label>
+                    <input type="date" id="startDate" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">
+                        <i class="bi bi-calendar-check me-1"></i>End Date
+                    </label>
+                    <input type="date" id="endDate" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">
+                        <i class="bi bi-funnel me-1"></i>Status
+                    </label>
+                    <select id="statusFilter" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-primary w-100" onclick="applyFilters()">
+                        <i class="bi bi-search me-2"></i>Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <ul class="nav nav-pills mb-4" id="appointmentFilter" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="all-tab" data-bs-toggle="pill" data-bs-target="#all"
+                    type="button" role="tab">
+                <i class="bi bi-calendar-check me-2"></i>All
+                <span class="badge bg-secondary ms-1">@(Model?.Count ?? 0)</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="upcoming-tab" data-bs-toggle="pill" data-bs-target="#upcoming"
+                    type="button" role="tab">
+                <i class="bi bi-clock-history me-2"></i>Upcoming
+                <span class="badge bg-success ms-1">@(Model?.Count(a => a.IsUpcoming) ?? 0)</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pending-tab" data-bs-toggle="pill" data-bs-target="#pending"
+                    type="button" role="tab">
+                <i class="bi bi-hourglass-split me-2"></i>Pending
+                <span class="badge bg-warning ms-1">@(Model?.Count(a => a.Status?.ToLower() == "pending") ?? 0)</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="completed-tab" data-bs-toggle="pill" data-bs-target="#completed"
+                    type="button" role="tab">
+                <i class="bi bi-check-all me-2"></i>Completed
+                <span class="badge bg-info ms-1">@(Model?.Count(a => a.Status?.ToLower() == "completed") ?? 0)</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="cancelled-tab" data-bs-toggle="pill" data-bs-target="#cancelled"
+                    type="button" role="tab">
+                <i class="bi bi-x-circle me-2"></i>Cancelled
+                <span class="badge bg-danger ms-1">@(Model?.Count(a => a.Status?.ToLower() == "cancelled") ?? 0)</span>
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="appointmentFilterContent">
+
+        <!-- All Appointments -->
+        <div class="tab-pane fade show active" id="all" role="tabpanel">
+            @await Html.PartialAsync("_DoctorAppointmentsList", Model)
+        </div>
+
+        <!-- Upcoming Appointments -->
+        <div class="tab-pane fade" id="upcoming" role="tabpanel">
+            @{
+                var upcomingAppointments = Model?.Where(a => a.IsUpcoming).OrderBy(a => a.StartAt).ToList();
+            }
+            @await Html.PartialAsync("_DoctorAppointmentsList", upcomingAppointments)
+        </div>
+
+        <!-- Pending Appointments -->
+        <div class="tab-pane fade" id="pending" role="tabpanel">
+            @{
+                var pendingAppointments = Model?.Where(a => a.Status?.ToLower() == "pending").OrderBy(a => a.StartAt).ToList();
+            }
+            @await Html.PartialAsync("_DoctorAppointmentsList", pendingAppointments)
+        </div>
+
+        <!-- Completed Appointments -->
+        <div class="tab-pane fade" id="completed" role="tabpanel">
+            @{
+                var completedAppointments = Model?.Where(a => a.Status?.ToLower() == "completed").OrderByDescending(a => a.StartAt).ToList();
+            }
+            @await Html.PartialAsync("_DoctorAppointmentsList", completedAppointments)
+        </div>
+
+        <!-- Cancelled Appointments -->
+        <div class="tab-pane fade" id="cancelled" role="tabpanel">
+            @{
+                var cancelledAppointments = Model?.Where(a => a.Status?.ToLower() == "cancelled").OrderByDescending(a => a.StartAt).ToList();
+            }
+            @await Html.PartialAsync("_DoctorAppointmentsList", cancelledAppointments)
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function applyFilters() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const status = document.getElementById('statusFilter').value;
+
+            let url = '/Doctor/Appointments?';
+            const params = [];
+
+            if (startDate) params.push(`startDate=${startDate}`);
+            if (endDate) params.push(`endDate=${endDate}`);
+            if (status) params.push(`status=${status}`);
+
+            window.location.href = url + params.join('&');
+        }
+    </script>
+}
+
+<style>
+    .nav-pills .nav-link {
+        color: #6c757d;
+        border-radius: 25px;
+        padding: 10px 20px;
+        transition: all 0.3s;
+    }
+
+        .nav-pills .nav-link:hover {
+            background-color: #f8f9fa;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: #3fbbc0;
+            color: white;
+        }
+
+            .nav-pills .nav-link.active .badge {
+                background-color: rgba(255, 255, 255, 0.3) !important;
+            }
+</style>

@@ -19,5 +19,8 @@ namespace Project.BLL.Interfaces
         Task AddAsync(CreateDoctorDto dto);
 
         Task ToggleStatusAsync(int id);
+        Task<object> GetDashboardDataAsync(int userId);
+        Task<object> GetProfileAsync(int userId);
+        Task<List<object>> GetDoctorAppointmentsAsync(int doctorId, string? status = null, DateTime? startDate = null, DateTime? endDate = null);
     }
 }

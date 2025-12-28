@@ -37,7 +37,7 @@
                 }
                 @if (user.Role == "Doctor")
                 {
-                    <li><a class="dropdown-item rounded-3 py-2" asp-controller="Doctors" asp-action="MyAppointments"><i class="bi bi-calendar-check me-2"></i>My Shifts</a></li>
+                    <li><a class="dropdown-item rounded-3 py-2" asp-controller="Doctor" asp-action="appointments"><i class="bi bi-calendar-check me-2"></i>Schedule</a></li>
                 }
                 @if (user.Role == "Patient")
                 {

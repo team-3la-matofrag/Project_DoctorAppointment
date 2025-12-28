@@ -20,6 +20,11 @@ namespace Project.MVC.Controllers
         {
             if (!IsAuthenticated()) return RedirectToAction("Login", "Account");
             
+            if (CurrentUser?.Role != "Patient")
+            {
+                TempData["Error"] = "Access Denied. This page is for Patients Only";
+                return RedirectToAction("Login","Home");
+            }
             try
             {
                 var userId = GetCurrentUserId();
