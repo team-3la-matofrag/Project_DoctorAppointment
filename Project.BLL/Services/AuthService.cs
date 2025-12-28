@@ -42,7 +42,7 @@ namespace Project.BLL.Services
 
             return new
             {
-                user.Id,
+                UserId = user.Id,
                 user.FullName,
                 user.Email,
                 user.Role,
@@ -69,7 +69,7 @@ namespace Project.BLL.Services
             {
                 FullName = dto.FullName,
                 Email = email,
-                Role = dto.Role,
+                Role = !string.IsNullOrEmpty(dto.Role) ? dto.Role : "Patient",
                 Phone = dto.Phone,
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true
@@ -85,7 +85,8 @@ namespace Project.BLL.Services
                 {
                     UserId = user.Id,
                     DOB = dto.DateOfBirth,
-                    Gender =dto.gender
+                    Gender =dto.Gender,
+                    Notes = string.Empty
                 };
                 await _patientRepository.AddAsync(patient);
                 await _patientRepository.SaveChangesAsync();

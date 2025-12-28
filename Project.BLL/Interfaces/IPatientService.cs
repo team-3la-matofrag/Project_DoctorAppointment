@@ -16,6 +16,7 @@ namespace Project.BLL.Interfaces
         Task UpdateAsync(int id,PatientDto dto);
         Task DeleteAsync(int id);
         Task<List<object>> GetPatientAppointmentsAsync(int patientId);
+        Task<PatientDashboardDto> GetDashboardDataAsync(int userId);
 
     }
 }

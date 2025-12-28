@@ -1,0 +1,99 @@
+@model Project.MVC.Models.PatientAppointmentViewModel
+
+<div class="card h-100 shadow-sm appointment-card">
+    <div class="card-body">
+        <!-- Status Badge -->
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <span class="badge bg-@Model.StatusColor">
+                <i class="@Model.StatusIcon me-1"></i>@Model.Status
+            </span>
+            @if (!Model.IsPast)
+            {
+                <small class="text-muted">@Model.RelativeDate</small>
+            }
+        </div>
+
+        <!-- Doctor Info -->
+        <div class="d-flex align-items-center mb-3">
+            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                <i class="bi bi-person-circle text-primary" style="font-size: 2rem;"></i>
+            </div>
+            <div>
+                <h5 class="card-title mb-1">@Model.DoctorName</h5>
+                @if (!string.IsNullOrEmpty(Model.DoctorSpecialty))
+                {
+                    <p class="text-muted small mb-0">
+                        <i class="bi bi-heart-pulse me-1"></i>@Model.DoctorSpecialty
+                    </p>
+                }
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Appointment Details -->
+        <div class="mb-2">
+            <i class="bi bi-calendar-event text-primary me-2"></i>
+            <strong>@Model.FormattedDate</strong>
+        </div>
+        <div class="mb-2">
+            <i class="bi bi-clock text-primary me-2"></i>
+            <span>@Model.FormattedTime</span>
+            <small class="text-muted">(@Model.FormattedDuration)</small>
+        </div>
+        @if (!string.IsNullOrEmpty(Model.Location))
+        {
+            <div class="mb-3">
+                <i class="bi bi-geo-alt text-primary me-2"></i>
+                <span class="small">@Model.Location</span>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.Notes))
+        {
+            <div class="alert alert-light mb-3">
+                <small><strong>Note:</strong> @Model.Notes</small>
+            </div>
+        }
+
+        <!-- Actions -->
+        <div class="d-flex gap-2 mt-3">
+            @if (Model.CanCancel && !Model.IsPast)
+            {
+                <button class="btn btn-outline-danger btn-sm flex-grow-1" 
+                        onclick="if(confirm('Are you sure you want to cancel your appointment with @Model.DoctorName?')) { document.getElementById('cancelForm-@Model.Id').submit(); }">
+                    <i class="bi bi-x-circle me-1"></i>Cancel
+                </button>
+               <form id="cancelForm-@Model.Id" 
+               asp-controller="Appointment"
+               asp-action="Cancel"
+                      asp-route-id=" @Model.Id"
+               method="post"
+               style="display:none">
+           </form>
+            }
+            @if (Model.Status?.ToLower() == "completed")
+            {
+                <button class="btn btn-outline-primary btn-sm flex-grow-1" disabled>
+                    <i class="bi bi-check-all me-1"></i>Completed
+                </button>
+            }
+            @if (Model.IsPast && Model.Status?.ToLower() != "completed")
+            {
+                <span class="badge bg-secondary flex-grow-1 py-2">Past Appointment</span>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .appointment-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-left: 4px solid #3fbbc0;
+    }
+
+    .appointment-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+    }
+</style>

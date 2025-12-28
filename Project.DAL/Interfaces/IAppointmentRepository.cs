@@ -7,7 +7,6 @@ public interface IAppointmentRepository
     Task<List<Appointment>> GetByDoctorAsync(int doctorId);
     Task<List<Appointment>> GetByPatientAsync(int patientId);
     Task<List<Appointment>> GetAllWithUsersAsync();
-
     Task<bool> HasConflictAsync(int doctorId, DateTime start, DateTime end);
     Task SaveChangesAsync();
 }

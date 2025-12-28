@@ -14,9 +14,8 @@ namespace Project.BLL.DTOs
        
 
         public string? ClinicAddress { get; set; }
-
-        public TimeSpan WorkStart { get; set; }
-        public TimeSpan WorkEnd { get; set; }
+        public string? WorkStart { get; set; }
+        public string? WorkEnd { get; set; }
         public string Email { get; set; } = null!;
         public bool IsActive { get; set; }
     }

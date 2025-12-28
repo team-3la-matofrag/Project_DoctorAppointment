@@ -9,7 +9,7 @@
 
         public DateTime DOB { get; set; }
         public string Gender { get; set; }
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
 
         public ICollection<Appointment> Appointments { get; set; }
     }

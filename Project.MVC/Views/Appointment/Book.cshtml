@@ -1,61 +1,384 @@
-﻿@{
+﻿@model Project.MVC.Models.BookAppointmentViewModel
+@{
     ViewData["Title"] = "Book Appointment";
 }
 
 <section id="appointment" class="appointment section">
 
     <div class="container section-title" data-aos="fade-up">
-        <h2>Quick Appointment Request</h2>
-        <p>Submit a preliminary booking request and our team will help you schedule your appointment</p>
+        <h2>Book Your Appointment</h2>
+        <p>Select your preferred doctor, date, and time for your appointment</p>
     </div>
 
     <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-        <form asp-action="Book" method="post" class="php-email-form">
-            <div class="row">
-                <div class="col-md-4 form-group">
-                    <input type="text" name="name" class="form-control" placeholder="Your Full Name" required="">
-                </div>
-                <div class="col-md-4 form-group mt-3 mt-md-0">
-                    <input type="email" class="form-control" name="email" placeholder="Your Email Address" required="">
-                </div>
-                <div class="col-md-4 form-group mt-3 mt-md-0">
-                    <input type="tel" class="form-control" name="phone" placeholder="Your Phone Number" required="">
-                </div>
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>@TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <form asp-action="Book" method="post" class="php-email-form" id="appointmentForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <!-- Step 1: Select Specialty and Doctor -->
             <div class="row">
-                <div class="col-md-4 form-group mt-3">
-                    <input type="datetime-local" name="date" class="form-control" required="">
-                </div>
-                <div class="col-md-4 form-group mt-3">
-                    <select name="department" class="form-select" required="">
-                        <option value="">Select Specialty</option>
-                        <option value="Cardiology">Cardiology</option>
-                        <option value="Neurology">Neurology</option>
-                        <option value="Pediatrics">Pediatrics</option>
-                        <option value="General Medicine">General Medicine</option>
-                        <option value="Surgery">Surgery</option>
+                <div class="col-md-6 form-group">
+                    <label for="specialty" class="form-label">Select Specialty *</label>
+                    <select asp-for="Specialty" class="form-select" id="specialtySelect" required>
+                        <option value="">-- Choose a Specialty --</option>
+                        @if (Model?.AvailableSpecialties != null)
+                        {
+                            foreach (var specialty in Model.AvailableSpecialties)
+                            {
+                                <option value="@specialty">@specialty</option>
+                            }
+                        }
                     </select>
+                    <span asp-validation-for="Specialty" class="text-danger small"></span>
                 </div>
-                <div class="col-md-4 form-group mt-3">
-                    <select name="doctor" class="form-select">
-                        <option value="">Select Doctor (Optional)</option>
-                        <option value="Dr. Anderson">Dr. William Anderson</option>
-                        <option value="Dr. Johnson">Dr. Sarah Johnson</option>
-                        <option value="Dr. White">Dr. Walter White</option>
-                        <option value="Dr. Jepson">Dr. Amanda Jepson</option>
+
+                <div class="col-md-6 form-group">
+                    <label for="doctor" class="form-label">Select Doctor *</label>
+                    <select asp-for="DoctorId" class="form-select" id="doctorSelect" required disabled>
+                        <option value="">-- First Select a Specialty --</option>
                     </select>
+                    <span asp-validation-for="DoctorId" class="text-danger small"></span>
+                    <small class="text-muted" id="doctorInfo"></small>
                 </div>
             </div>
 
-            <div class="form-group mt-3">
-                <textarea class="form-control" name="message" rows="5" placeholder="Describe your symptoms or medical concern (Optional)"></textarea>
+            <!-- Step 2: Select Date and Time -->
+            <div class="row mt-3">
+                <div class="col-md-6 form-group">
+                    <label for="date" class="form-label">Appointment Date *</label>
+                    <input asp-for="AppointmentDate" type="date" class="form-control" id="dateInput" 
+                           min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" 
+                           max="@DateTime.Today.AddMonths(3).ToString("yyyy-MM-dd")" 
+                           required disabled>
+                    <span asp-validation-for="AppointmentDate" class="text-danger small"></span>
+                    <small class="text-muted">Select a date within the next 3 months</small>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label for="timeSlot" class="form-label">Time Slot *</label>
+                    <select asp-for="TimeSlot" class="form-select" id="timeSlotSelect" required disabled>
+                        <option value="">-- First Select Date --</option>
+                    </select>
+                    <span asp-validation-for="TimeSlot" class="text-danger small"></span>
+                    <div id="availabilityLoader" class="text-center mt-2" style="display:none;">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <span class="ms-2 small">Checking availability...</span>
+                    </div>
+                </div>
             </div>
-            <div class="mt-3 text-center">
-                <button type="submit">Request Appointment</button>
+
+            <!-- Step 3: Additional Information -->
+            <div class="form-group mt-3">
+                <label for="reason" class="form-label">Reason for Visit (Optional)</label>
+                <textarea asp-for="Reason" class="form-control" id="reasonText" rows="4" 
+                          placeholder="Briefly describe your symptoms or reason for appointment" 
+                          maxlength="500"></textarea>
+                <span asp-validation-for="Reason" class="text-danger small"></span>
+                <small class="text-muted"><span id="charCount">0</span>/500 characters</small>
+            </div>
+
+            <!-- Summary Section -->
+            <div id="appointmentSummary" class="card mt-4" style="display:none;">
+                <div class="card-body bg-light">
+                    <h5 class="card-title">
+                        <i class="bi bi-calendar-check text-primary"></i> Appointment Summary
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Specialty:</strong> <span id="summarySpecialty"></span></p>
+                            <p class="mb-1"><strong>Doctor:</strong> <span id="summaryDoctor"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Date:</strong> <span id="summaryDate"></span></p>
+                            <p class="mb-1"><strong>Time:</strong> <span id="summaryTime"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="mt-4 text-center">
+                <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
+                    <i class="bi bi-calendar-plus me-2"></i>Book Appointment
+                </button>
+                <a asp-controller="Patient" asp-action="Dashboard" class="btn btn-outline-secondary btn-lg ms-2">
+                    <i class="bi bi-x-circle me-2"></i>Cancel
+                </a>
             </div>
         </form>
 
     </div>
 
 </section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            let selectedDoctor = null;
+            
+            // Specialty Selection
+            $('#specialtySelect').change(function() {
+                const specialty = $(this).val();
+                const doctorSelect = $('#doctorSelect');
+                const dateInput = $('#dateInput');
+                
+                // Reset dependent fields
+                doctorSelect.empty().append('<option value="">Loading doctors...</option>').prop('disabled', true);
+                dateInput.prop('disabled', true);
+                $('#timeSlotSelect').empty().append('<option value="">-- First Select Date --</option>').prop('disabled', true);
+                $('#submitBtn').prop('disabled', true);
+                $('#appointmentSummary').hide();
+                
+                if(specialty) {
+                    // Fetch doctors by specialty
+                    $.getJSON('/Appointment/GetDoctorsBySpecialty', { specialty: specialty })
+                        .done(function(doctors) {
+                            doctorSelect.empty().append('<option value="">-- Select a Doctor --</option>');
+                            
+                            if(doctors.length === 0) {
+                                doctorSelect.append('<option value="">No doctors available for this specialty</option>');
+                            } else {
+                                $.each(doctors, function(index, doctor) {
+                                    doctorSelect.append(
+                                        $('<option></option>')
+                                            .val(doctor.id)
+                                            .text(doctor.fullName)
+                                            .data('specialty', doctor.specialty)
+                                    );
+                                });
+                                doctorSelect.prop('disabled', false);
+                            }
+                        })
+                        .fail(function() {
+                            doctorSelect.empty().append('<option value="">Error loading doctors</option>');
+                            showError('Failed to load doctors. Please try again.');
+                        });
+                } else {
+                    doctorSelect.empty().append('<option value="">-- First Select a Specialty --</option>');
+                }
+            });
+            
+            // Doctor Selection
+            $('#doctorSelect').change(function() {
+                const doctorId = $(this).val();
+                const doctorName = $(this).find('option:selected').text();
+                const dateInput = $('#dateInput');
+                
+                if(doctorId) {
+                    selectedDoctor = {
+                        id: doctorId,
+                        name: doctorName
+                    };
+                    dateInput.prop('disabled', false);
+                    $('#doctorInfo').text(`Selected: ${doctorName}`);
+                    updateSummary();
+                } else {
+                    selectedDoctor = null;
+                    dateInput.prop('disabled', true);
+                    $('#timeSlotSelect').empty().append('<option value="">-- First Select Date --</option>').prop('disabled', true);
+                    $('#doctorInfo').text('');
+                    $('#submitBtn').prop('disabled', true);
+                }
+            });
+            
+            // Date Selection
+            $('#dateInput').change(function() {
+                const date = $(this).val();
+                const doctorId = $('#doctorSelect').val();
+                const timeSlotSelect = $('#timeSlotSelect');
+                
+                if(date && doctorId) {
+                    // Show loader
+                    $('#availabilityLoader').show();
+                    timeSlotSelect.empty().append('<option value="">Loading available times...</option>').prop('disabled', true);
+                    
+                    // Check availability
+                    $.getJSON('/Appointment/CheckAvailability', { doctorId: doctorId, date: date })
+                        .done(function(slots) {
+                            $('#availabilityLoader').hide();
+                            timeSlotSelect.empty().append('<option value="">-- Select a Time Slot --</option>');
+                            
+                            if(slots.error) {
+                                showError(slots.error);
+                                return;
+                            }
+                            
+                            if(slots.length === 0) {
+                                timeSlotSelect.append('<option value="">No available slots for this date</option>');
+                            } else {
+                                $.each(slots, function(index, slot) {
+                                    const timeText = formatTime(slot.timeSlot);
+                                    const option = $('<option></option>')
+                                        .val(slot.timeSlot)
+                                        .text(timeText)
+                                        .prop('disabled', !slot.isAvailable);
+                                    
+                                    if(!slot.isAvailable) {
+                                        option.text(timeText + ' (Booked)');
+                                    }
+                                    
+                                    timeSlotSelect.append(option);
+                                });
+                                timeSlotSelect.prop('disabled', false);
+                            }
+                        })
+                        .fail(function() {
+                            $('#availabilityLoader').hide();
+                            timeSlotSelect.empty().append('<option value="">Error checking availability</option>');
+                            showError('Failed to check availability. Please try again.');
+                        });
+                    
+                    updateSummary();
+                }
+            });
+            
+            // Time Slot Selection
+            $('#timeSlotSelect').change(function() {
+                const timeSlot = $(this).val();
+                if(timeSlot) {
+                    $('#submitBtn').prop('disabled', false);
+                    updateSummary();
+                } else {
+                    $('#submitBtn').prop('disabled', true);
+                }
+            });
+            
+            // Character Counter
+            $('#reasonText').on('input', function() {
+                const length = $(this).val().length;
+                $('#charCount').text(length);
+                
+                if(length > 500) {
+                    $(this).val($(this).val().substring(0, 500));
+                    $('#charCount').text(500);
+                }
+            });
+            
+            // Form Validation
+            $('#appointmentForm').submit(function(e) {
+                const specialty = $('#specialtySelect').val();
+                const doctorId = $('#doctorSelect').val();
+                const date = $('#dateInput').val();
+                const timeSlot = $('#timeSlotSelect').val();
+                
+                if(!specialty || !doctorId || !date || !timeSlot) {
+                    e.preventDefault();
+                    showError('Please fill in all required fields.');
+                    return false;
+                }
+                
+                // Disable submit button to prevent double submission
+                $('#submitBtn').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Booking...');
+            });
+            
+            // Update Summary
+            function updateSummary() {
+                const specialty = $('#specialtySelect option:selected').text();
+                const doctor = $('#doctorSelect option:selected').text();
+                const date = $('#dateInput').val();
+                const timeSlot = $('#timeSlotSelect option:selected').text();
+                
+                if(specialty && doctor && doctor !== '-- Select a Doctor --') {
+                    $('#summarySpecialty').text(specialty);
+                    $('#summaryDoctor').text(doctor);
+                    $('#summaryDate').text(date ? formatDate(date) : 'Not selected');
+                    $('#summaryTime').text(timeSlot && timeSlot !== '-- Select a Time Slot --' ? timeSlot : 'Not selected');
+                    $('#appointmentSummary').slideDown();
+                }
+            }
+            
+            // Helper Functions
+            function formatTime(time24) {
+                const [hours, minutes] = time24.split(':');
+                const hour = parseInt(hours);
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                const hour12 = hour % 12 || 12;
+                return `${hour12}:${minutes} ${ampm}`;
+            }
+            
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                return date.toLocaleDateString('en-US', options);
+            }
+            
+            function showError(message) {
+                alert(message); // In production, use a better notification system
+            }
+        });
+    </script>
+    
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<style>
+    .php-email-form {
+        background: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.08);
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #2c4964;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #3fbbc0;
+        box-shadow: 0 0 0 0.2rem rgba(63, 187, 192, 0.25);
+    }
+    
+    select:disabled,
+    input:disabled {
+        background-color: #f8f9fa;
+        cursor: not-allowed;
+    }
+    
+    #appointmentSummary {
+        border-left: 4px solid #3fbbc0;
+    }
+    
+    .btn-primary {
+        background-color: #3fbbc0;
+        border-color: #3fbbc0;
+        padding: 12px 30px;
+        font-size: 16px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .btn-primary:hover {
+        background-color: #2aa3a8;
+        border-color: #2aa3a8;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(63, 187, 192, 0.3);
+    }
+    
+    .btn-primary:disabled {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+    }
+</style>

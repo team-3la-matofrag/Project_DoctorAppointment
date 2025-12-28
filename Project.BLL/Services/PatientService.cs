@@ -47,6 +47,7 @@ namespace Project.BLL.Services
                 UserId = p.UserId,
                 FullName = p.User?.FullName ?? "",
                 Email = p.User?.Email ?? "",
+                Phone = p.User?.Phone ?? "",
                 DOB = p.DOB,
                 Gender = p.Gender,
                 Notes = p.Notes
@@ -63,6 +64,7 @@ namespace Project.BLL.Services
                 UserId = patient.UserId,
                 FullName = patient.User?.FullName ?? "",
                 Email = patient.User?.Email ?? "",
+                Phone = patient.User?.Phone ?? "",
                 DOB = patient.DOB,
                 Gender = patient.Gender,
                 Notes = patient.Notes
@@ -79,6 +81,7 @@ namespace Project.BLL.Services
                 UserId = patient.UserId,
                 FullName = patient.User?.FullName ?? "",
                 Email = patient.User?.Email ?? "",
+                Phone = patient.User?.Phone ?? "",
                 DOB = patient.DOB,
                 Gender = patient.Gender,
                 Notes = patient.Notes
@@ -94,7 +97,7 @@ namespace Project.BLL.Services
                 a.Id,
                 a.StartAt,
                 a.EndAt,
-                a.Status,
+                Status = a.Status.ToString(),
                 a.Notes,
                 DoctorName = a.Doctor?.User?.FullName ?? "Unknown",
                 IsUpcoming = a.StartAt >= now
@@ -113,6 +116,60 @@ namespace Project.BLL.Services
             patient.Notes = dto.Notes ?? "";
 
             await _repo.UpdateAsync(patient);
+        }
+
+        public async Task<PatientDashboardDto> GetDashboardDataAsync(int userId)
+        {
+            // Get patient profile
+            var patient = await _repo.GetByUserIdAsync(userId);
+            if (patient == null)
+                throw new Exception("Patient profile not found");
+
+            // Get all appointments for stats
+            var allAppointments = await _repo.GetPatientAppointmentsAsync(patient.Id);
+            var now = DateTime.UtcNow;
+
+            // Get upcoming appointments (next 3)
+            var upcomingAppointments = allAppointments
+                .Where(a => a.StartAt >= now && a.Status != AppointmentStatus.Cancelled)
+                .OrderBy(a => a.StartAt)
+                .Take(3)
+                .ToList();
+
+            // Get unique doctors visited
+            var doctorsVisited = allAppointments
+                .Where(a => a.Status == AppointmentStatus.Completed)
+                .Select(a => a.DoctorId)
+                .Distinct()
+                .Count();
+
+            return new PatientDashboardDto
+            {
+                Profile = new PatientProfileDto
+                {
+                    Id = patient.Id,
+                    FullName = patient.User?.FullName ?? "",
+                    Email = patient.User?.Email ?? "",
+                    Gender = patient.Gender
+                },
+                Stats = new DashboardStatsDto
+                {
+                    TotalAppointments = allAppointments.Count,
+                    UpcomingAppointments = upcomingAppointments.Count,
+                    DoctorsVisited = doctorsVisited
+                },
+                UpcomingAppointments = upcomingAppointments.Select((a, index) => new UpcomingAppointmentDto
+                {
+                    Id = a.Id,
+                    AppointmentDate = a.StartAt,
+                    AppointmentTime = a.StartAt,
+                    DoctorName = a.Doctor?.User?.FullName ?? "Unknown",
+                    Specialty = a.Doctor?.Specialization?.Name ?? "General",
+                    Status = a.Status.ToString(),
+                    Location = a.Doctor?.ClinicAddress ?? "Main Clinic",
+                    IsNext = index == 0 // First upcoming is "Next"
+                }).ToList()
+            };
         }
     }
 }

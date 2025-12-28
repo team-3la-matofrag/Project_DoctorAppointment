@@ -18,6 +18,6 @@ namespace Project.BLL.DTOs
 
         public string Role { get; set; } = "Patient";
         public DateTime DateOfBirth { get; set; }
-        public string gender { get; set; }
+        public string Gender { get; set; }
     }
 }

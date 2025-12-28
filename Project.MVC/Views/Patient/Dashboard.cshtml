@@ -1,0 +1,226 @@
+@model Project.MVC.Models.PatientDashboardViewModel
+@{
+    ViewData["Title"] = "Patient Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h2 style="text-align:center; margin-bottom:3rem; font-size:300%">
+        Welcome, @(Model?.Profile?.FullName ?? "Guest")
+    </h2>
+
+    <!-- PART 1: Quick Stats Cards -->
+    <div class="row mb-5 g-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                        <i class="bi bi-calendar-check text-primary" style="font-size: 2rem;"></i>
+                    </div>
+                    <h3 class="fw-bold text-primary mb-1">@(Model?.Stats?.TotalAppointments ?? 0)</h3>
+                    <p class="text-muted mb-0">Total Appointments</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                        <i class="bi bi-clock-history text-success" style="font-size: 2rem;"></i>
+                    </div>
+                    <h3 class="fw-bold text-success mb-1">@(Model?.Stats?.UpcomingAppointments ?? 0)</h3>
+                    <p class="text-muted mb-0">Upcoming Appointments</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                        <i class="bi bi-person-hearts text-info" style="font-size: 2rem;"></i>
+                    </div>
+                    <h3 class="fw-bold text-info mb-1">@(Model?.Stats?.DoctorsVisited ?? 0)</h3>
+                    <p class="text-muted mb-0">Doctors Visited</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PART 2: Upcoming Appointments Cards -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold mb-0">
+                    <i class="bi bi-calendar3 text-primary me-2"></i>Upcoming Appointments
+                </h4>
+                <a asp-action="Appointments" class="btn btn-outline-primary btn-sm">
+                    View All <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (Model?.UpcomingAppointments?.Any() == true)
+    {
+        <div class="row g-4 mb-5">
+            @foreach (var appointment in Model.UpcomingAppointments)
+            {
+                var colorClass = appointment.IsNext ? "primary" : (appointment.StatusColor);
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100 @(appointment.IsNext ? "position-relative overflow-hidden" : "")">
+                        @if (appointment.IsNext)
+                        {
+                            <div class="position-absolute top-0 end-0">
+                                <span class="badge bg-danger rounded-0 rounded-bottom-start px-3 py-2">
+                                    <i class="bi bi-star-fill me-1"></i>Next
+                                </span>
+                            </div>
+                        }
+                        <div class="card-body">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="bg-@colorClass bg-opacity-10 rounded-circle p-2 me-3">
+                                    <i class="bi bi-person-circle text-@colorClass" style="font-size: 2rem;"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title mb-1 fw-bold">@appointment.DoctorName</h5>
+                                    <p class="text-muted small mb-0">
+                                        <i class="@appointment.SpecialtyIcon me-1"></i>@appointment.Specialty
+                                    </p>
+                                </div>
+                            </div>
+                            <hr class="my-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-calendar-event text-@colorClass me-2"></i>
+                                <span class="small">
+                                    @if (!string.IsNullOrEmpty(appointment.RelativeDate) && appointment.RelativeDate != appointment.FormattedDate)
+                                    {
+                                        <strong>@appointment.RelativeDate</strong><text> - </text>
+                                    }
+                                    @appointment.FormattedDate
+                                </span>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-clock text-@colorClass me-2"></i>
+                                <span class="small">@appointment.FormattedTime</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-geo-alt text-@colorClass me-2"></i>
+                                <span class="small">@appointment.Location</span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                @if (appointment.Status?.ToLower() == "pending")
+                                {
+                                    <button class="btn btn-@colorClass btn-sm flex-grow-1" onclick="confirmAppointment(@appointment.Id)">
+                                        <i class="bi bi-check-circle me-1"></i>Confirm
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-@appointment.StatusColor flex-grow-1 py-2">@appointment.Status</span>
+                                }
+                                <button class="btn btn-outline-danger btn-sm"
+                                        onclick="if(confirm('Are you sure you want to cancel your appointment with @appointment.DoctorName?')) { document.getElementById('cancelForm-@appointment.Id').submit(); }">
+                                    <i class="bi bi-x-circle"></i>
+                                        <form id="cancelForm-@appointment.Id" 
+                                                asp-controller="Appointment"
+                                                asp-action="Cancel"
+                                               asp-route-id="@appointment.Id"
+                                                method="post"
+                                                style="display:none"></form>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center mb-5">
+            <i class="bi bi-calendar-x fs-1 d-block mb-3"></i>
+            <h5>No Upcoming Appointments</h5>
+            <p class="mb-0">You don't have any upcoming appointments scheduled.</p>
+        </div>
+    }
+
+    <!-- Quick Action Cards -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-success bg-opacity-10 rounded-circle p-3 me-3">
+                            <i class="bi bi-calendar-plus text-success" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-1">Book Appointment</h5>
+                            <p class="card-text text-muted small mb-0">Schedule a new visit with a doctor</p>
+                        </div>
+                    </div>
+                    <a asp-controller="Appointment" asp-action="Book" class="btn btn-success w-100">
+                        <i class="bi bi-plus-circle me-2"></i>Book Now
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-info bg-opacity-10 rounded-circle p-3 me-3">
+                            <i class="bi bi-person-badge text-info" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-1">My Profile</h5>
+                            <p class="card-text text-muted small mb-0">Update your personal information</p>
+                        </div>
+                    </div>
+                    <a asp-action="Profile" class="btn btn-info w-100">
+                        <i class="bi bi-pencil-square me-2"></i>Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+        }
+</style>
+
+@section Scripts {
+    <script>
+        function confirmAppointment(appointmentId) {
+            if (confirm('Are you sure you want to confirm this appointment?')) {
+                fetch(`/api/appointments/${appointmentId}/confirm`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Appointment confirmed successfully!');
+                        location.reload();
+                    } else {
+                        alert('Failed to confirm appointment. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+            }
+        }
+
+    </script>
+}
