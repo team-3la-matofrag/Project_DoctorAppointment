@@ -45,6 +45,21 @@ namespace Project.API.Controllers
             return Ok(patient);
         }
 
+        // GET: api/patients/dashboard/{userId}
+        [HttpGet("dashboard/{userId}")]
+        public async Task<IActionResult> GetDashboard(int userId)
+        {
+            try
+            {
+                var dashboard = await _service.GetDashboardDataAsync(userId);
+                return Ok(dashboard);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+
         // GET: api/patients/{id}/appointments
         [HttpGet("{id}/appointments")]
         public async Task<IActionResult> GetAppointments(int id)

@@ -1,19 +1,264 @@
+@model Project.MVC.Models.UpdatePatientProfileViewModel
 @{
     ViewData["Title"] = "My Profile";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container mt-5">
-    <h2>My Profile</h2>
-    <form>
-        <div class="mb-3">
-            <label class="form-label">Full Name</label>
-            <input type="text" class="form-control" value="John Doe" readonly>
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-2">
+                <i class="bi bi-person-circle text-primary me-2"></i>My Profile
+            </h2>
+            <p class="text-muted">Manage your personal information</p>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-control" value="john@example.com" readonly>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-        <button type="button" class="btn btn-primary">Save Changes</button>
-    </form>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Warning"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>@TempData["Warning"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Profile Form -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0" style="color:white">
+                        <i class="bi bi-pencil-square me-2"></i>Edit Profile Information
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Profile" method="post" id="profileForm">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="Email" />
+
+                        <!-- Full Name -->
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label">
+                                <i class="bi bi-person me-1"></i>Full Name *
+                            </label>
+                            <input asp-for="FullName" class="form-control" placeholder="Enter your full name" />
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Email (Read-Only) -->
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">
+                                <i class="bi bi-envelope me-1"></i>Email Address
+                            </label>
+                            <input asp-for="Email" class="form-control" readonly disabled 
+                                   style="background-color: #f8f9fa; cursor: not-allowed;" />
+                            <small class="text-muted">Email cannot be changed. Contact support if needed.</small>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="mb-3">
+                            <label asp-for="Phone" class="form-label">
+                                <i class="bi bi-telephone me-1"></i>Phone Number *
+                            </label>
+                            <input asp-for="Phone" class="form-control" placeholder="e.g., +1 234 567 8900" />
+                            <span asp-validation-for="Phone" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row">
+                            <!-- Date of Birth -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DateOfBirth" class="form-label">
+                                    <i class="bi bi-calendar me-1"></i>Date of Birth *
+                                </label>
+                                <input asp-for="DateOfBirth" type="date" class="form-control" 
+                                       max="@DateTime.Today.AddYears(-1).ToString("yyyy-MM-dd")" />
+                                <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                                @if (Model != null)
+                                {
+                                    <small class="text-muted">Age: @Model.Age years</small>
+                                }
+                            </div>
+
+                            <!-- Gender -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Gender" class="form-label">
+                                    <i class="bi bi-gender-ambiguous me-1"></i>Gender *
+                                </label>
+                                <select asp-for="Gender" class="form-select">
+                                    <option value="">-- Select Gender --</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                    <option value="Prefer not to say">Prefer not to say</option>
+                                </select>
+                                <span asp-validation-for="Gender" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label">
+                                <i class="bi bi-chat-left-text me-1"></i>Medical Notes (Optional)
+                            </label>
+                            <textarea asp-for="Notes" class="form-control" rows="4" 
+                                      placeholder="Any allergies, medical conditions, or notes for your doctors..." 
+                                      maxlength="500"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger small"></span>
+                            <small class="text-muted float-end"><span id="charCount">0</span>/500 characters</small>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle me-2"></i>Save Changes
+                            </button>
+                            <a asp-action="Dashboard" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Summary Sidebar -->
+        <div class="col-lg-4">
+            <!-- Profile Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 100px; height: 100px;">
+                        <i class="bi bi-person-fill text-primary" style="font-size: 3rem;"></i>
+                    </div>
+                    <h4 class="mb-1">@(Model?.FullName ?? "Your Name")</h4>
+                    <p class="text-muted mb-2">@(Model?.Email ?? "email@example.com")</p>
+                    @if (Model != null)
+                    {
+                        <span class="badge bg-info">@Model.Age years old</span>
+                    }
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Quick Actions</h6>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a asp-action="Dashboard" class="list-group-item list-group-item-action">
+                        <i class="bi bi-grid-1x2 me-2"></i>Dashboard
+                    </a>
+                    <a asp-action="Appointments" class="list-group-item list-group-item-action">
+                        <i class="bi bi-calendar-check me-2"></i>My Appointments
+                    </a>
+                    <a asp-controller="Appointment" asp-action="Book" class="list-group-item list-group-item-action">
+                        <i class="bi bi-calendar-plus me-2"></i>Book Appointment
+                    </a>
+                    <a asp-controller="Account" asp-action="Logout" class="list-group-item list-group-item-action text-danger">
+                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                    </a>
+                </div>
+            </div>
+
+            <!-- Help Card -->
+            <div class="card shadow-sm mt-4 border-primary">
+                <div class="card-body">
+                    <h6 class="card-title text-primary">
+                        <i class="bi bi-info-circle me-2"></i>Need Help?
+                    </h6>
+                    <p class="card-text small">
+                        If you need to change your email address or have any issues updating your profile, 
+                        please contact our support team.
+                    </p>
+                    <a href="mailto:support@healthcare.com" class="btn btn-sm btn-outline-primary w-100">
+                        <i class="bi bi-envelope me-2"></i>Contact Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Character Counter
+            function updateCharCount() {
+                const length = $('#Notes').val().length;
+                $('#charCount').text(length);
+                
+                if (length > 500) {
+                    $('#Notes').val($('#Notes').val().substring(0, 500));
+                    $('#charCount').text(500);
+                }
+            }
+            
+            $('#Notes').on('input', updateCharCount);
+            updateCharCount(); // Initial count
+            
+            // Form Validation
+            $('#profileForm').submit(function(e) {
+                const fullName = $('#FullName').val().trim();
+                const phone = $('#Phone').val().trim();
+                const dob = $('#DateOfBirth').val();
+                const gender = $('#Gender').val();
+                
+                if (!fullName || !phone || !dob || !gender) {
+                    e.preventDefault();
+                    alert('Please fill in all required fields.');
+                    return false;
+                }
+            });
+        });
+    </script>
+    
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<style>
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #3fbbc0;
+        box-shadow: 0 0 0 0.2rem rgba(63, 187, 192, 0.25);
+    }
+
+    .btn-primary {
+        background-color: #3fbbc0;
+        border-color: #3fbbc0;
+    }
+
+    .btn-primary:hover {
+        background-color: #2aa3a8;
+        border-color: #2aa3a8;
+    }
+
+    .list-group-item-action:hover {
+        background-color: #f8f9fa;
+        border-left: 3px solid #3fbbc0;
+    }
+</style>
+

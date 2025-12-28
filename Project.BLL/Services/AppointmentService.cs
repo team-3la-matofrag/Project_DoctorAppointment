@@ -106,10 +106,7 @@ namespace Project.BLL.Services
             EndAt = a.EndAt,
             Status = a.Status.ToString()
         };
-
-
-       
-
+         
     }
 
 }

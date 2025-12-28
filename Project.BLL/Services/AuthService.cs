@@ -42,7 +42,7 @@ namespace Project.BLL.Services
 
             return new
             {
-                user.Id,
+                UserId = user.Id,
                 user.FullName,
                 user.Email,
                 user.Role,
