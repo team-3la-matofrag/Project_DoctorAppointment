@@ -14,50 +14,25 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("Connection"),
         b => b.MigrationsAssembly("Project.DAL")
     ));
-
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("Connection")
-    ));
 var cs = builder.Configuration.GetConnectionString("connection");
 Console.WriteLine(cs);
-
-builder.Services.AddScoped<UserRepository>();
-builder.Services.AddScoped<PatientRepository>();
-builder.Services.AddScoped<DoctorRepository>();
-builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
-
-builder.Services.AddScoped<SpecializationRepository>();
-
-
-builder.Services.AddScoped<AppointmentRepository>();
-builder.Services.AddScoped<NotificationRepository>();
-builder.Services.AddScoped<IDoctorService, DoctorService>();
-
-
-builder.Services.AddScoped<IAuthService, AuthService>();
-
-// DAL Interfaces
+// Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-
-
-
-// DAL
-builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
-
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 
-builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<SpecializationRepository>(); 
 
-
-// BLL
+// Services
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
-builder.Services.AddScoped<IAdminRepository, AdminRepository>();
-
-// Add services to the container.
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -91,6 +66,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
